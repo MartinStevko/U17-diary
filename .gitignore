@@ -5,8 +5,8 @@ myvenv
 db.sqlite3
 .DS_Store
 .vscode
-eshop/migrations
-eshop/pyvenv.cfg
+diary/migrations
+diary/pyvenv.cfg
 media/
 important-secret.txt
 
