@@ -1,3 +1,15 @@
+# Database / migrations
+*.pyc
+__pycache__
+myvenv
+db.sqlite3
+.DS_Store
+.vscode
+eshop/migrations
+eshop/pyvenv.cfg
+media/
+important-secret.txt
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
