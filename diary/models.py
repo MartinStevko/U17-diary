@@ -42,9 +42,9 @@ class Activity(models.Model):
         return "{}".format(self.name)
 
 class Action(models.Model):
-    idAccount = models.ForeignKey(Account, on_delete=CASCADE)
-    idActivity = models.ForeignKey(Activity, on_delete=PROTECT)
-    
+    idAccount = models.ForeignKey(Account, on_delete=models.CASCADE)
+    idActivity = models.ForeignKey(Activity, on_delete=models.PROTECT)
+
     duration = models.PositiveIntegerField(default=0)
 
     description = models.TextField()
