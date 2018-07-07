@@ -58,6 +58,14 @@ class Action(models.Model):
         else:
             return "{} - {} minút".format(self.idActivity.name, self.duration)
 
+class Message(models.Model):
+    from_user = models.ForeignKey(User, on_delete=models.CASCADE)
+    to_user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    idAction = models.ForeignKey(Action, on_delete=models.CASCADE)
+    content = models.TextField()
+    time = models.DateTimeField(default=timezone.now)
+
 class Change(models.Model):
     idUser = models.ForeignKey(User, on_delete=models.CASCADE)
     time = models.DateTimeField(default=timezone.now)
