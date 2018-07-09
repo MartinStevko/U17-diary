@@ -60,7 +60,6 @@ class Action(models.Model):
 
 class Message(models.Model):
     from_user = models.ForeignKey(User, on_delete=models.CASCADE)
-    to_user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     idAction = models.ForeignKey(Action, on_delete=models.CASCADE)
     content = models.TextField()
