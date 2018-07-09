@@ -14,23 +14,22 @@
     <meta property="og:description" content="Webová platforma vyvýjaná pre Slovenskú ženskú reprezentáciu v ultimate frisbee do 17 rokov za účelom vyhodnocovania kondičnej prípravy" />
     <meta property="og:image" content="{% static 'img/logo.jpg' %}" />
 
-    <title>Denníček</title>
+    {% block title %}
+    {% endblock %}
     <link rel="icon" href="{% static 'img/diary.png' %}" type="image/png">
 
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-
     <link rel="stylesheet" href="{% static 'css/diary.css' %}">
+    {% block css %}
+    {% endblock %}
   </head>
   <body>
     <div class="navbar">
       {% if user.is_authenticated %}
         <p style="float: left;">
-          Vitaj <a href="{% url 'diary:profile' %}">{{ user.username }}</a>!
+          Vitaj <a href="#profile">{{ user.username }}</a>!
         </p>
         <p style="float: right;">
-          <a href="{% url 'diary:log_out' %}">Odhlásiť sa</a>
+          <a href="#out">Odhlásiť sa</a>
         </p>
       {% else %}
         <p style="float: right;">
@@ -40,8 +39,12 @@
     </div>
 
     <div class="content">
+      {% block sidebar %}
+      {% endblock %}
       {% block content %}
       {% endblock %}
     </div>
   </body>
+  {% block late_js %}
+  {% endblock %}
 </html>
