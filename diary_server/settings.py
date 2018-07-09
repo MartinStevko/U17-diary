@@ -124,6 +124,6 @@ STATIC_URL = '/static/'
 
 MEDIA_URL = '/media/'
 
-admin.site.site_url = '/eshop/index'
+admin.site.site_url = '/index'
 
 # SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'
