@@ -1,0 +1,49 @@
+{% extends 'diary/base.html' %}
+
+{% load staticfiles %}
+
+{% block title %}
+  <title>Registrovať sa</title>
+{% endblock %}
+
+{% block bootstrap %}
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+{% endblock %}
+
+{% block css %}
+  <link rel="stylesheet" href="{% static 'css/form.css' %}">
+{% endblock %}
+
+{% block content %}
+  <div class="form">
+    <h1>Registrácia</h1>
+    {% if error %}
+      <div class="alert alert-danger alert-dismissible fade in">
+        <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+        <strong>Chyba!</strong> {{ error }}
+      </div>
+    {% endif %}
+    <form method="POST">
+      {% csrf_token %}
+      <label for="username">Používateľské meno</label>
+      <br>
+      <input id="username" class="field" name="username" value="{{ username }}" type="text">
+      <br>
+      <label for="email">E-mail</label>
+      <br>
+      <input id="email" class="field" name="email" value="{{ email }}" type="text">
+      <br>
+      <label for="password">Heslo</label>
+      <br>
+      <input id="password" class="field" name="password" type="password">
+      <br>
+      <label for="password_again">Zopakuj heslo</label>
+      <br>
+      <input id="password_again" class="field" name="password_again" type="password">
+      <br>
+      <input type="submit" value="Vytvoriť účet">
+    </form>
+  </div>
+{% endblock %}
