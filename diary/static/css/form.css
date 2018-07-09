@@ -1,0 +1,36 @@
+h1 {
+  margin-bottom: 20px;
+}
+
+.form {
+  margin: auto;
+  padding: 10px 0px;
+
+  width: 35%;
+  min-width: 300px;
+}
+
+input {
+    width: 100%;
+    padding: 12px 20px;
+    margin: 5px 0 15px 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-size: 1em;
+}
+
+input[type=submit] {
+  margin-top: 15px;
+  background-color: #3c82f2;
+  color: white;
+  border-radius: 6px;
+  border: None;
+  cursor: pointer;
+}
+
+input[type=submit]:hover {
+  background-color: #1067f2;
+  border: None;
+}
