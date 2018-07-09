@@ -3,7 +3,7 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <meta name="description" content="Webová platforma vyvýjaná pre Slovenskú ženskú reprezentáciu v ultimate frisbee do 17 rokov za účelom vyhodnocovania kondičnej prípravy">
+    <meta name="description" content="Webová platforma vyvýjaná pre slovenskú ženskú reprezentáciu v ultimate frisbee do 17 rokov za účelom vyhodnocovania kondičnej prípravy">
     <meta name="author" content="Martin Števko">
     <meta name="keywords" content="príprava, kondičná, U17, baby, repre">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -11,39 +11,72 @@
     <meta property="og:url" content="{{ request.META.HTTP_HOST }}" />
     <meta property="og:type" content="website" />
     <meta property="og:title" content="Kondičný denníček" />
-    <meta property="og:description" content="Webová platforma vyvýjaná pre Slovenskú ženskú reprezentáciu v ultimate frisbee do 17 rokov za účelom vyhodnocovania kondičnej prípravy" />
+    <meta property="og:description" content="Webová platforma vyvýjaná pre slovenskú ženskú reprezentáciu v ultimate frisbee do 17 rokov za účelom vyhodnocovania kondičnej prípravy" />
     <meta property="og:image" content="{% static 'img/logo.jpg' %}" />
 
     {% block title %}
     {% endblock %}
     <link rel="icon" href="{% static 'img/diary.png' %}" type="image/png">
 
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    {% block bootstrap %}
+    {% endblock %}
     <link rel="stylesheet" href="{% static 'css/diary.css' %}">
+    <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
     {% block css %}
     {% endblock %}
   </head>
   <body>
+    <!-- Sidebar -->
+    <div class="w3-sidebar w3-bar-block w3-animate-left" style="display:none;z-index:5" id="mySidebar">
+      <button class="w3-bar-item w3-button w3-large" onclick="w3_close()">Zavrieť &times;</button>
+      <a href="{% url 'diary:home' %}" class="w3-bar-item w3-button">Domov</a>
+      {% if user.is_staff %}
+        <a href="{% url 'diary:activities' %}" class="w3-bar-item w3-button">Aktivity</a>
+        <a href="{% url 'diary:all_diaries' %}" class="w3-bar-item w3-button">Všetky denníčky</a>
+      {% else %}
+        <a href="{% url 'diary:profile' %}" class="w3-bar-item w3-button">Môj profil</a>
+        <a href="{% url 'diary:graph' %}" class="w3-bar-item w3-button">Graf</a>
+        <a href="{% url 'diary:my_diary' %}" class="w3-bar-item w3-button">Môj denník</a>
+        <a href="{% url 'diary:add_action' %}" class="w3-bar-item w3-button">Pridať aktivitu</a>
+      {% endif %}
+      <a href="{% url 'diary:log_out' %}" class="w3-bar-item w3-button">Odhlásiť sa</a>
+    </div>
+
+    <div class="w3-overlay w3-animate-opacity" onclick="w3_close()" style="cursor:pointer" id="myOverlay"></div>
+
+    <!-- Navbar -->
     <div class="navbar">
       {% if user.is_authenticated %}
-        <p style="float: left;">
-          Vitaj <a href="#profile">{{ user.username }}</a>!
-        </p>
-        <p style="float: right;">
-          <a href="#out">Odhlásiť sa</a>
-        </p>
+        <button class="w3-button w3-xxlarge" onclick="w3_open()">&#9776;</button>
+        <span style="float: left;">
+          Vitaj <a href="{% url 'diary:profile' %}">{{ user.username }}</a>!
+        </span>
+        <span style="float: right;">
+          <a href="{% url 'diary:log_out' %}">Odhlásiť sa</a>
+        </span>
       {% else %}
-        <p style="float: right;">
+        <span style="float: right;">
           <a href="{% url 'diary:log_in' %}">Prihlás sa</a> alebo si <a href="{% url 'diary:register' %}">vytvor účet</a>
-        </p>
+        </span>
       {% endif %}
     </div>
 
     <div class="content">
-      {% block sidebar %}
-      {% endblock %}
       {% block content %}
       {% endblock %}
     </div>
+
+    <script>
+      function w3_open() {
+          document.getElementById("mySidebar").style.display = "block";
+          document.getElementById("myOverlay").style.display = "block";
+      }
+      function w3_close() {
+          document.getElementById("mySidebar").style.display = "none";
+          document.getElementById("myOverlay").style.display = "none";
+      }
+    </script>
   </body>
   {% block late_js %}
   {% endblock %}
