@@ -5,17 +5,30 @@ from . import views
 app_name = 'diary'
 
 urlpatterns = [
-    path('diary/login', views.log_in),
-    path('diary/logout', views.log_out),
-    path('diary/profile', views.profile),
-    path('register', views.register),
-    path('index', views.index),
+    ### Authentication ###
+    path('diary/login', views.log_in, name='log_in'),
+    path('diary/logout', views.log_out, name='log_out'),
+    path('register', views.register, name='register'),
+    ######################
+
+    ### My diary ###
+    path('home', views.home, name='home'),
+    path('profile/me', views.profile, name='profile'),
+    path('profile/me/change', views.change_profile, name='change_profile'),
+    path('graph', views.graph, name='graph'),
+    path('diary/my', views.my_diary, name='my_diary'),
+    path('diary/action/<int:action_id>', views.view_action, name='view_action'),
+    path('diary/action/add', views.add_action, name='add_action'),
+    ################
+
+    ### Staff things ###
+    path('activity/list', views.activities, name='activities'),
+    path('activity/add', views.add_activity, name='add_activity'),
+    path('diary/list', views.all_diaries, name='all_diaries'),
+    path('diary/user/<str:username>/action/<int:action_id>', views.not_my_action, name='not_my_action'),
+    path('diary/user/<str:username>', views.not_my_diary, name='not_my_diary'),
+    ####################
+    
+    path('index', views.index, name='index'),
     path('', views.other),
 ]
-
-'''
-    path('obdlznik/hra/', views.druzinka),
-    path('obdlznik/ulohy/', views.opravovatel),
-    path('obdlznik/spravca/', views.spravca),
-    path('obdlznik/', views.index),
-'''
