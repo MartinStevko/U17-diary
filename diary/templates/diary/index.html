@@ -3,17 +3,56 @@
 {% load staticfiles %}
 
 {% block title %}
-  <title>Denníček</title>
+  <title>Kondičný denník</title>
 {% endblock %}
 
-{% block css %}
+{% block bootstrap %}
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-
-  <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
 {% endblock %}
 
 {% block content %}
-  <h1>Ta daco</h1>
+  <h1>Kondičný denník</h1>
+  {% if success %}
+    <div class="alert alert-success alert-dismissible fade in">
+      <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+      <strong>Super!</strong> {{ success }}
+    </div>
+  {% endif %}
+  {% if info %}
+    <div class="alert alert-info alert-dismissible fade in">
+      <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+      <strong>Info -</strong> {{ info }}
+    </div>
+  {% endif %}
+  {% if warn %}
+    <div class="alert alert-warning alert-dismissible fade in">
+      <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+      <strong>Pozor!</strong> {{ warn }}
+    </div>
+  {% endif %}
+  {% if error %}
+    <div class="alert alert-danger alert-dismissible fade in">
+      <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+      <strong>Chyba!</strong> {{ error }}
+    </div>
+  {% endif %}
+  <p class="introduction">
+    Webová platforma určená pre slovenskú ženskú reprezentáciu do 17 rokov. Pre
+    ľubovoľnú interakciu so stránkou sa musíš najprv
+    <a href="{% url 'diary:log_in' %}">prihlásiť</a>. Ak ešte nemáš
+    vytvorený účet, môžeš tak urobiť <a href="{% url 'diary:register' %}">tu</a>.
+    Následne musíš počkať na schválenie administrátorom stránky a až potom budeš
+    môcť webstránku používať.
+  </p>
+  <p class="introduction">
+    V prípade akýchkoľvek otázok, postrehov, problémov alebo výpadkov týkajúcich
+    sa stránky kontaktujte správcu na adrese
+    <a href="mailto:mstevko10@gmail.com">mstevko10@gmail.com</a>.
+  </p>
+  <p class="introduction">
+    Celá platforma je "Open source". Zdrojový kód -
+    <a target="_blank" href="https://github.com/MartinStevko/U17-diary">GitHub/MartinStevko</a>.
+  </p>
 {% endblock %}
