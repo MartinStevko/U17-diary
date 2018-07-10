@@ -1,15 +1,12 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 
+from datetime import datetime, timedelta, date
+
 from django.contrib.auth.models import User
 from .models import *
 
 ### Done ###
-def log_first():
-    request.session['message'] = ['info','Stránka, ktorú chceš navštíviť vyžaduje prihlásenie. Najprv sa prihlás.']
-
-    return redirect('diary:index')
-
 def index(request):
     template = 'diary/index.html'
 
@@ -58,10 +55,11 @@ def home(request):
             return render(request, template, {})
 
     else:
-        log_first()
+        request.session['message'] = 'Stránka, ktorú chceš navštíviť vyžaduje prihlásenie. Najprv sa prihlás.'
+        return redirect('diary:log_in')
 
 def other(request):
-    request.session['message'] = ['warn','Ops. Hľadaná stránka nebola nájdená.']
+    request.session['message'] = ['warn','Hľadaná stránka nebola nájdená.']
 
     if request.user.is_authenticated:
         return redirect('diary:domov')
@@ -85,7 +83,17 @@ def log_in(request):
             return render(request, template, {'error':message})
 
     else:
-        return render(request, template, {})
+        try:
+            message = request.session['message']
+        except(KeyError):
+            message = None;
+
+        if message:
+            del request.session['message']
+
+            return render(request, template, {'info':message})
+        else:
+            return render(request, template, {})
 
 def log_out(request):
     logout(request)
@@ -95,10 +103,12 @@ def log_out(request):
 
 def register(request):
     template = 'diary/register.html'
+    clubs = Club.objects.all()
 
     if request.method == 'POST':
         username = request.POST['username']
         email = request.POST['email']
+        club_id = request.POST['club']
         password = request.POST['password']
         password_again = request.POST['password_again']
 
@@ -114,77 +124,139 @@ def register(request):
                         pass
                     else:
                         message = 'Zadaj svoj platný e-mail.'
-                        return render(request, template, {'error':message, 'username':username})
+                        return render(request, template, {'clubs':clubs, 'error':message, 'username':username})
                 else:
                     message = 'Zadaj svoj platný e-mail.'
-                    return render(request, template, {'error':message, 'username':username})
+                    return render(request, template, {'clubs':clubs, 'error':message, 'username':username})
             else:
                 message = 'Zadaj svoj platný e-mail.'
-                return render(request, template, {'error':message, 'username':username})
+                return render(request, template, {'clubs':clubs, 'error':message, 'username':username})
 
             try:
                 User.objects.get(email=email)
 
             except(User.DoesNotExist):
+                try:
+                    club_id = int(club_id)
+                    club = Club.objects.get(pk=club_id)
+
+                except(Club.DoesNotExist, ValueError):
+                    message = 'Vyber si zo zoznamu svoj klub.'
+                    return render(request, template, {'clubs':clubs, 'error':message, 'username':username, 'email':email})
+
                 if len(password) < 5:
                     message = 'Zadané heslo je príliš krátke.'
-                    return render(request, template, {'error':message, 'username':username, 'email':email})
+                    return render(request, template, {'clubs':clubs, 'error':message, 'username':username, 'email':email})
 
                 if password == password_again:
                     user = User.objects.create_user(username, email, password)
+                    profile = Account.objects.create(idUser=user, club=club)
 
                     login(request, user)
-                    return redirect('diary:change_profile')
+
+                    request.session['message'] = ['success','Bola si úspešne zaregistrovaná. Teraz môžeš denníček používať, ale ak chceš vidieť ako sa darí tvojim kamarátkam, musíš počkať, kým ti niekto z coachov schváli účet.']
+                    return redirect('diary:home')
 
                 else:
                     message = 'Zadané heslá sa nezhodujú.'
-                    return render(request, template, {'error':message, 'username':username, 'email':email})
+                    return render(request, template, {'clubs':clubs, 'error':message, 'username':username, 'email':email})
 
             else:
                 message = 'Zadaný e-mail sa už používa, vyber si iný.'
-                return render(request, template, {'error':message, 'username':username})
+                return render(request, template, {'clubs':clubs, 'error':message, 'username':username})
 
         else:
             message = 'Zadané používateľské meno sa už používa, vyber si iné.'
-            return render(request, template, {'error':message, 'email':email})
+            return render(request, template, {'clubs':clubs, 'error':message, 'email':email})
 
     else:
-        return render(request, template, {})
+        return render(request, template, {'clubs':clubs})
+
+def update_points(profile):
+    actions = Action.objects.filter(idAccount=profile)
+    p = 0
+    for act in actions:
+        p += act.duration * act.idActivity.ppm
+
+    profile.points = p
+
+def profile(request):
+    template = 'diary/profile.html'
+
+    if request.user.is_authenticated:
+        current_user = request.user
+        try:
+            profile = Account.objects.get(idUser=current_user)
+        except(Account.DoesNotExist):
+            request.session['message'] = ['warn','Profil pre tvoj účet neexistuje. Ak máš dojem, že by mal, kontaktuj admina.']
+            return redirect('diary:home')
+
+        update_points(profile)
+
+        first_date = date(2018, 7, 5)
+        delta = datetime.now().date() - first_date
+        date_difference = delta.days
+        data = []
+
+        for i in range(date_difference+1):
+            date_now = first_date + timedelta(days=i)
+
+            p = 0
+            actions = Action.objects.filter(idAccount=profile)
+            for act in actions:
+                r = act.date.date() - date_now
+                if r.days == 0:
+                    p += act.duration * act.idActivity.ppm
+            data.append([i, p])
+
+        if profile.approved == True:
+            state = 'Schválený'
+        else:
+            state = 'Čakajúci na schválenie'
+
+        return render(request, template, {'profile':profile, 'state':state, 'date_difference':date_difference, 'data':data})
+
+    else:
+        request.session['message'] = 'Stránka, ktorú chceš navštíviť vyžaduje prihlásenie. Najprv sa prihlás.'
+        return redirect('diary:log_in')
 ############
 
 ### Not done ###
-def profile(request):
-    pass
-
 def change_profile(request):
     pass
 
+# login, approved
 def graph(request):
     pass
 
+# login
 def my_diary(request):
     pass
 
+# login
 def view_action(request, action_id):
     pass
 
+# login
 def add_action(request):
     pass
-################
 
-### Staff ###
+# staff
 def activities(request):
     pass
 
+# staff
 def add_activity(request):
     pass
 
+# staff
 def all_diaries(request):
     pass
 
+# staff
 def not_my_diary(request, username):
     pass
 
+# staff
 def not_my_action(request, username, action_id):
     pass
-#############

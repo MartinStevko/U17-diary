@@ -1,0 +1,141 @@
+{% extends 'diary/base.html' %}
+
+{% load staticfiles %}
+
+{% block title %}
+  <title>Môj profil</title>
+{% endblock %}
+
+{% block bootstrap %}
+  <script src="https://www.amcharts.com/lib/3/amcharts.js"></script>
+  <script src="https://www.amcharts.com/lib/3/serial.js"></script>
+  <script src="https://www.amcharts.com/lib/3/plugins/export/export.min.js"></script>
+  <link rel="stylesheet" href="https://www.amcharts.com/lib/3/plugins/export/export.css" type="text/css" media="all" />
+  <script src="https://www.amcharts.com/lib/3/themes/light.js"></script>
+{% endblock %}
+
+{% block css %}
+  <link rel="stylesheet" href="{% static 'css/form.css' %}">
+
+  <script>
+    var chartData = generateChartData();
+    var chart = AmCharts.makeChart("chartdiv", {
+        "type": "serial",
+        "theme": "light",
+        "marginRight": 80,
+        "autoMarginOffset": 20,
+        "marginTop": 7,
+        "dataProvider": chartData,
+        "valueAxes": [{
+            "axisAlpha": 0.2,
+            "dashLength": 1,
+            "position": "left"
+        }],
+        "mouseWheelZoomEnabled": true,
+        "graphs": [{
+            "id": "g1",
+            "balloonText": "[[value]]",
+            "bullet": "round",
+            "bulletBorderAlpha": 1,
+            "bulletColor": "#FFFFFF",
+            "hideBulletsCount": 50,
+            "title": "red line",
+            "valueField": "visits",
+            "useLineColorForBulletBorder": true,
+            "balloon":{
+                "drop":true
+            }
+        }],
+        "chartScrollbar": {
+            "autoGridCount": true,
+            "graph": "g1",
+            "scrollbarHeight": 40
+        },
+        "chartCursor": {
+           "limitToGraph":"g1"
+        },
+        "categoryField": "date",
+        "categoryAxis": {
+            "parseDates": true,
+            "axisColor": "#DADADA",
+            "dashLength": 1,
+            "minorGridEnabled": true
+        },
+        "export": {
+            "enabled": true
+        }
+    });
+
+    chart.addListener("rendered", zoomChart);
+    zoomChart();
+
+    // this method is called when chart is first inited as we listen for "rendered" event
+    function zoomChart() {
+        // different zoom methods can be used - zoomToIndexes, zoomToDates, zoomToCategoryValues
+        chart.zoomToIndexes(chartData.length - 40, chartData.length - 1);
+    }
+
+    // generate some random data, quite different range
+    function generateChartData() {
+        var chartData = [];
+        var firstDate = new Date();
+        firstDate.setDate(firstDate.getDate() - {{ date_difference }});
+        var visits = 0;
+
+        {% for d in data %}
+          var newDate = new Date(firstDate);
+          newDate.setDate(newDate.getDate() + {{ d.0 }});
+
+          visits = {{ d.1 }};
+
+          chartData.push({
+              date: newDate,
+              visits: visits
+          });
+        {% endfor %}
+
+        return chartData;
+    }
+  </script>
+{% endblock %}
+
+{% block content %}
+  <h1>Môj profil</h1>
+  <div class="row">
+    <div class="info">
+      <table class="profile">
+        <tr>
+          <td class="category">Stav účtu:</td>
+          <td class="value">{{ state }}</td>
+        </tr>
+        <tr>
+          <td class="category">Používateľské meno:</td>
+          <td class="value">{{ user.username }}</td>
+        </tr>
+        <tr>
+          <td class="category">E-mail:</td>
+          <td class="value">{{ user.email }}</td>
+        </tr>
+      </table>
+    </div>
+    <div class="info">
+      <table class="profile">
+        <tr>
+          <td class="category2">Body:</td>
+          <td class="value">{{ profile.points }}</td>
+        </tr>
+        <tr>
+          <td class="category2">Klub:</td>
+          <td class="value">{{ profile.club.name }}</td>
+        </tr>
+        <tr>
+          <td colspan="2"><a id="change" href="{% url 'diary:change_profile' %}">Zmeň profil</a></td>
+        </tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="graph">
+    <div id="chartdiv"></div>
+  </div>
+{% endblock %}

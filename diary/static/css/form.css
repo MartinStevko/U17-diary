@@ -11,14 +11,23 @@ h1 {
 }
 
 input {
-    width: 100%;
-    padding: 12px 20px;
-    margin: 5px 0 15px 0;
-    display: inline-block;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    box-sizing: border-box;
-    font-size: 1em;
+  width: 100%;
+  padding: 12px 15px;
+  margin: 5px 0 15px 0;
+  display: inline-block;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+select {
+  width: 100%;
+  padding: 12px 15px;
+  margin: 5px 0 15px 0;
+  display: inline-block;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
 }
 
 input[type=submit] {
@@ -33,4 +42,74 @@ input[type=submit] {
 input[type=submit]:hover {
   background-color: #1067f2;
   border: None;
+}
+
+a#change {
+  width: 100%;
+  padding: 12px 15px;
+  margin: 0;
+  display: inline-block;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+  background-color: #3c82f2;
+  color: white;
+  border-radius: 6px;
+  border: None;
+  cursor: pointer;
+  text-decoration: none;
+  text-align: center;
+}
+
+a#change:hover {
+  background-color: #1067f2;
+}
+
+div.row {
+  width: 100%;
+  min-width: 800px;
+  display: block;
+}
+
+div.info {
+  float: left;
+  width: 50%;
+  min-width: 360px;
+}
+
+table.profile {
+  margin: 2% 6% 7% 6%;
+}
+
+td.category {
+  font-weight: bold;
+  width: 160px;
+  min-width: 160px;
+}
+
+td.category2 {
+  font-weight: bold;
+  width: 100px;
+  min-width: 100px;
+}
+
+td.value {
+  font-size: 105%;
+  width: 200px;
+  min-width: 200px;
+}
+
+tr {
+  height: 35px;
+}
+
+.row:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+#chartdiv {
+	width	: 100%;
+  min-width: 800px;
+	height	: 500px;
 }
