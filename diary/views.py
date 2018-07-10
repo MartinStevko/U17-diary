@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
+from django.db.models import Q
 
 from datetime import datetime, timedelta, date
 
@@ -116,6 +117,14 @@ def register(request):
             User.objects.get(username=username)
 
         except(User.DoesNotExist):
+            if len(username) < 3:
+                message = 'Zadané používateľské meno je príliš krátke, vyber si iné.'
+                return render(request, template, {
+                    'clubs':clubs,
+                    'error':message,
+                    'email':email
+                })
+
             i = email.find('@') + 1
             if i >= 4:
                 j = email[i:].find('.') + 1
@@ -124,13 +133,27 @@ def register(request):
                         pass
                     else:
                         message = 'Zadaj svoj platný e-mail.'
-                        return render(request, template, {'clubs':clubs, 'error':message, 'username':username})
+                        return render(request, template, {
+                            'clubs':clubs,
+                            'error':message,
+                            'username':username
+                        })
+
                 else:
                     message = 'Zadaj svoj platný e-mail.'
-                    return render(request, template, {'clubs':clubs, 'error':message, 'username':username})
+                    return render(request, template, {
+                        'clubs':clubs,
+                        'error':message,
+                        'username':username
+                    })
+
             else:
                 message = 'Zadaj svoj platný e-mail.'
-                return render(request, template, {'clubs':clubs, 'error':message, 'username':username})
+                return render(request, template, {
+                    'clubs':clubs,
+                    'error':message,
+                    'username':username
+                })
 
             try:
                 User.objects.get(email=email)
@@ -142,11 +165,21 @@ def register(request):
 
                 except(Club.DoesNotExist, ValueError):
                     message = 'Vyber si zo zoznamu svoj klub.'
-                    return render(request, template, {'clubs':clubs, 'error':message, 'username':username, 'email':email})
+                    return render(request, template, {
+                        'clubs':clubs,
+                        'error':message,
+                        'username':username,
+                        'email':email
+                    })
 
                 if len(password) < 5:
                     message = 'Zadané heslo je príliš krátke.'
-                    return render(request, template, {'clubs':clubs, 'error':message, 'username':username, 'email':email})
+                    return render(request, template, {
+                        'clubs':clubs,
+                        'error':message,
+                        'username':username,
+                        'email':email
+                    })
 
                 if password == password_again:
                     user = User.objects.create_user(username, email, password)
@@ -159,15 +192,28 @@ def register(request):
 
                 else:
                     message = 'Zadané heslá sa nezhodujú.'
-                    return render(request, template, {'clubs':clubs, 'error':message, 'username':username, 'email':email})
+                    return render(request, template, {
+                        'clubs':clubs,
+                        'error':message,
+                        'username':username,
+                        'email':email
+                    })
 
             else:
                 message = 'Zadaný e-mail sa už používa, vyber si iný.'
-                return render(request, template, {'clubs':clubs, 'error':message, 'username':username})
+                return render(request, template, {
+                    'clubs':clubs,
+                    'error':message,
+                    'username':username
+                })
 
         else:
             message = 'Zadané používateľské meno sa už používa, vyber si iné.'
-            return render(request, template, {'clubs':clubs, 'error':message, 'email':email})
+            return render(request, template, {
+                'clubs':clubs,
+                'error':message,
+                'email':email
+            })
 
     else:
         return render(request, template, {'clubs':clubs})
@@ -179,6 +225,7 @@ def update_points(profile):
         p += act.duration * act.idActivity.ppm
 
     profile.points = p
+    profile.save()
 
 def profile(request):
     template = 'diary/profile.html'
@@ -214,7 +261,140 @@ def profile(request):
         else:
             state = 'Čakajúci na schválenie'
 
-        return render(request, template, {'profile':profile, 'state':state, 'date_difference':date_difference, 'data':data})
+        return render(request, template, {
+            'profile':profile,
+            'state':state,
+            'date_difference':date_difference,
+            'data':data
+        })
+
+    else:
+        request.session['message'] = 'Stránka, ktorú chceš navštíviť vyžaduje prihlásenie. Najprv sa prihlás.'
+        return redirect('diary:log_in')
+
+def change_profile(request):
+    template = 'diary/change_profile.html'
+
+    if request.user.is_authenticated:
+        current_user = request.user
+        try:
+            profile = Account.objects.get(idUser=current_user)
+        except(Account.DoesNotExist):
+            request.session['message'] = ['warn','Profil pre tvoj účet neexistuje. Ak máš dojem, že by mal, kontaktuj admina.']
+            return redirect('diary:home')
+
+        update_points(profile)
+
+        if profile.approved == True:
+            state = 'Schválený'
+        else:
+            state = 'Čakajúci na schválenie'
+
+        clubs = Club.objects.filter(~Q(pk=profile.club.id))
+
+        if request.method == 'POST':
+            new_username = request.POST['username']
+            new_email = request.POST['email']
+            new_club_id = int(request.POST['club'])
+
+            if profile.club.id != new_club_id:
+                try:
+                    profile.club = Club.objects.get(pk=new_club_id)
+                    profile.save()
+                except(Club.DoesNotExist):
+                    message = 'Vyber si klub zo zoznamu.'
+                    return render(request, template, {
+                        'profile':profile,
+                        'state':state,
+                        'clubs':clubs,
+                        'error':message
+                    })
+                else:
+                    clubs = Club.objects.filter(~Q(pk=profile.club.id))
+
+            if current_user.username != new_username:
+                if len(new_username) < 3:
+                    message = 'Zadané používateľské meno je príliš krátke, vyber si iné.'
+                    return render(request, template, {
+                        'profile':profile,
+                        'state':state,
+                        'clubs':clubs,
+                        'error':message,
+                        'new_email':new_email
+                    })
+
+                try:
+                    User.objects.get(username=new_username)
+                except(User.DoesNotExist):
+                    current_user.username = new_username
+                    current_user.save()
+                else:
+                    message = 'Zadané používateľské meno sa už používa, vyber si iné.'
+                    return render(request, template, {
+                        'profile':profile,
+                        'state':state,
+                        'clubs':clubs,
+                        'error':message,
+                        'new_email':new_email
+                    })
+
+            if current_user.email != new_email:
+                i = new_email.find('@') + 1
+                if i >= 4:
+                    j = new_email[i:].find('.') + 1
+                    if j >= 2:
+                        if len(new_email[j:]) >= 1:
+                            pass
+                        else:
+                            message = 'Zadaj svoj platný e-mail.'
+                            return render(request, template, {
+                                'profile':profile,
+                                'state':state,
+                                'clubs':clubs,
+                                'error':message
+                            })
+
+                    else:
+                        message = 'Zadaj svoj platný e-mail.'
+                        return render(request, template, {
+                            'profile':profile,
+                            'state':state,
+                            'clubs':clubs,
+                            'error':message
+                        })
+
+                else:
+                    message = 'Zadaj svoj platný e-mail.'
+                    return render(request, template, {
+                        'profile':profile,
+                        'state':state,
+                        'clubs':clubs,
+                        'error':message
+                    })
+
+                try:
+                    User.objects.get(email=new_email)
+                except(User.DoesNotExist):
+                    current_user.email = new_email
+                    current_user.save()
+
+                else:
+                    message = 'Zadaný e-mail sa už používa.'
+                    return render(request, template, {
+                        'profile':profile,
+                        'state':state,
+                        'clubs':clubs,
+                        'error':message
+                    })
+
+            return redirect('diary:profile')
+
+        else:
+            return render(request, template, {
+                'profile':profile,
+                'state':state,
+                'clubs':clubs
+            })
 
     else:
         request.session['message'] = 'Stránka, ktorú chceš navštíviť vyžaduje prihlásenie. Najprv sa prihlás.'
@@ -222,13 +402,6 @@ def profile(request):
 ############
 
 ### Not done ###
-def change_profile(request):
-    pass
-
-# login, approved
-def graph(request):
-    pass
-
 # login
 def my_diary(request):
     pass
@@ -239,6 +412,10 @@ def view_action(request, action_id):
 
 # login
 def add_action(request):
+    pass
+
+# login, approved
+def graph(request):
     pass
 
 # staff

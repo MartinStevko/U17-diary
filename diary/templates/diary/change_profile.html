@@ -1,0 +1,64 @@
+{% extends 'diary/base.html' %}
+
+{% load staticfiles %}
+
+{% block title %}
+  <title>Zmeniť profil</title>
+{% endblock %}
+
+{% block bootstrap %}
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+{% endblock %}
+
+{% block css %}
+  <link rel="stylesheet" href="{% static 'css/form.css' %}">
+{% endblock %}
+
+{% block content %}
+  <h1>Zmeniť profil</h1>
+  <div class="form">
+    {% if error %}
+      <div class="alert alert-danger alert-dismissible fade in">
+        <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+        <strong>Chyba!</strong> {{ error }}
+      </div>
+    {% endif %}
+    <form method="POST">
+      {% csrf_token %}
+      <table class="profile">
+        <tr>
+          <td class="category">Stav účtu:</td>
+          <td class="value"><span>{{ state }}</span></td>
+        </tr>
+        <tr>
+          <td class="category">Používateľské meno:</td>
+          <td class="value"><input class="field" name="username" value="{{ user.username }}" type="text"></td>
+        </tr>
+        <tr>
+          <td class="category">E-mail:</td>
+          {% if new_email %}
+            <td class="value"><input class="field" name="email" value="{{ new_email }}" type="email"></td>
+          {% else %}
+            <td class="value"><input class="field" name="email" value="{{ user.email }}" type="email"></td>
+          {% endif %}
+        </tr>
+        <tr>
+          <td class="category2">Klub:</td>
+          <td class="value">
+            <select id="club" class="field" name="club">
+              <option value="{{ profile.club.id }}">{{ profile.club.name }}</option>
+              {% for c in clubs %}
+                <option value="{{ c.id }}">{{ c.name }}</option>
+              {% endfor %}
+            </select>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="2"><input type="submit" value="Ulož"></td>
+        </tr>
+      </table>
+    </form>
+  </div>
+{% endblock %}
