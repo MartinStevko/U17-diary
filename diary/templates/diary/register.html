@@ -33,7 +33,16 @@
       <br>
       <label for="email">E-mail</label>
       <br>
-      <input id="email" class="field" name="email" value="{{ email }}" type="text">
+      <input id="email" class="field" name="email" value="{{ email }}" type="email">
+      <br>
+      <label for="club">Klub</label>
+      <br>
+      <select id="club" class="field" name="club">
+        <option value="none">------------</option>
+        {% for club in clubs %}
+          <option value="{{ club.id }}">{{ club.name }}</option>
+        {% endfor %}
+      </select>
       <br>
       <label for="password">Heslo</label>
       <br>
