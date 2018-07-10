@@ -65,6 +65,9 @@ class Message(models.Model):
     content = models.TextField()
     time = models.DateTimeField(default=timezone.now)
 
+    def __str__(self):
+        return "{} - {}".format(self.from_user.username, self.time)
+
 class Change(models.Model):
     idUser = models.ForeignKey(User, on_delete=models.CASCADE)
     time = models.DateTimeField(default=timezone.now)
