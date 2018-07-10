@@ -32,6 +32,7 @@
       <button class="w3-bar-item w3-button w3-large" onclick="w3_close()">Zavrieť &times;</button>
       <a href="{% url 'diary:home' %}" class="w3-bar-item w3-button">Domov</a>
       {% if user.is_staff %}
+        <a href="{% url 'admin:index' %}" class="w3-bar-item w3-button">Admin</a>
         <a href="{% url 'diary:activities' %}" class="w3-bar-item w3-button">Aktivity</a>
         <a href="{% url 'diary:all_diaries' %}" class="w3-bar-item w3-button">Všetky denníčky</a>
       {% else %}
