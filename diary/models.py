@@ -26,7 +26,7 @@ class Week(models.Model):
     points = models.PositiveIntegerField(default=0)
 
     def __str__(self):
-        return "{}. týždeň - {}".format(self.ordinal_number, self.idUser.name)
+        return "{}. týždeň - {}".format(self.ordinal_number, self.idAccount.idUser.username)
 
 class Activity(models.Model):
     name = models.CharField(max_length=100)
