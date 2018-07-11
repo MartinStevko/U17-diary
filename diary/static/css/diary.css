@@ -152,6 +152,139 @@ i.fa-envelope {
   text-align: center;
 }
 
+i.fa-arrow-left {
+  margin-right: 10px;
+}
+
 .outside {
   overflow-x: auto;
+}
+
+.act-box {
+  display: block;
+}
+
+.act-head {
+  text-align: center;
+  font-size: 17px;
+  color: #f9f9f9;
+  background-color: #3c82f2;
+  padding: 20px 15px;
+  box-sizing: border-box;
+  border-radius: 50% 50% 0 0;
+  font-weight: bold;
+}
+
+.act-body {
+  height: calc(100% - 260px);
+  border: 2px solid #ccc;
+  border-top: None;
+}
+
+div.act-list {
+  border-bottom: 2px solid #ccc;
+}
+
+table.act-list {
+  width: 100%;
+}
+
+td.act-list {
+  width: 50%;
+  text-align: center;
+  padding: 12px;
+}
+
+div.send_message {
+  height: 180px;
+  border-top: 2px solid #ccc;
+}
+
+div.chat {
+  height: calc(100% - 224px);
+}
+
+table.send_form {
+  width: 100%;
+}
+
+tr.send {
+  width: 100%;
+}
+
+td.send_text {
+  width: 75%;
+}
+
+td.send_button {
+  width: 25%;
+  text-align: center;
+}
+
+textarea.send_text {
+  border-left: None;
+  border-top: None;
+  border-bottom: none;
+  height: 167px;
+  font-size: 16px;
+  width: 100%;
+}
+
+button[type=submit] {
+  width: 70px;
+  height: 70px;
+  background-color: #3c82f2;
+  color: white;
+  border-radius: 35px;
+  border: None;
+  cursor: pointer;
+  display: inline-block;
+  font-size: 30px;
+  box-sizing: border-box;
+  margin: auto;
+}
+
+button[type=submit]:hover {
+  background-color: #1067f2;
+}
+
+@media (max-width: 409px) {
+  div.chat {
+    height: calc(100% - 240px);
+  }
+}
+
+div.chat {
+  padding-left: 15px;
+  padding-right: 15px;
+  padding-top: 5px;
+  overflow: hidden;
+  overflow-y: auto;
+}
+
+div.chat-mess {
+  padding-bottom: 5px;
+}
+
+.chat-bubble {
+  padding: 5px 15px;
+	position: relative;
+	background: #eaeaea;
+	border-radius: .4em;
+  width: 100%;
+}
+
+.chat-time {
+  text-align: right;
+  color: #afafaf;
+}
+
+.chat-author {
+  padding-left: 7px;
+  font-size: 110%;
+  color: #afafaf;
+}
+
+h4:not(#chat) {
+  margin-top: 0;
 }

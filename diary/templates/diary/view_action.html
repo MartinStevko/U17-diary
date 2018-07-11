@@ -1,0 +1,76 @@
+{% extends 'diary/base.html' %}
+
+{% load staticfiles %}
+
+{% block title %}
+  <title>Denníček</title>
+{% endblock %}
+
+{% block bootstrap %}
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+{% endblock %}
+
+{% block css %}
+  <link rel="stylesheet" href="{% static 'css/diary.css' %}">
+{% endblock %}
+
+{% block content %}
+  <div class="row_div">
+    <a id="add" href="{% url 'diary:my_diary' %}">
+      <i class="fa fa-arrow-left"></i>
+      Späť na denník
+    </a>
+  </div>
+  <div class="act-box">
+    <div class="act-head">
+      {{ action.0 }} - {{ action.2 }}
+    </div>
+    <div class="act-body">
+      <div class="act-list">
+        <table class="act-list">
+          <tr>
+            <td class="act-list">{{ action.4 }}</td>
+            <td class="act-list">Pridelené body: <strong>{{ action.3 }}</strong></td>
+          </tr>
+        </table>
+      </div>
+      <div class="chat">
+        <h4>Popis</h4>
+        <div class="desc">
+          {{ action.1 }}
+        </div>
+        <h4 id="chat">Diskusia</h4>
+        <div class="discussion">
+          {% for mes in messages %}
+            <div class="chat-mess">
+              <div class="chat-author">
+                {{ mes.from_user.username }}
+              </div>
+              <div class="chat-bubble">
+                {{ mes.content }}
+              </div>
+              <div class="chat-time">
+                {{ mes.time }}
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+      <div class="send_message">
+        <form method="POST">
+          {% csrf_token %}
+          <table class="send_form">
+            <tr class="send">
+              <td class="send_text">
+                <textarea class="send_text" name="send_text"></textarea>
+              </td>
+              <td class="send_button">
+                <button class="send_button" type="submit"><i class="fa fa-send"></i></button>
+              </td>
+            </tr>
+          </table>
+        </form>
+      </div>
+    </div>
+  </div>
+{% endblock %}

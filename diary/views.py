@@ -451,7 +451,10 @@ def my_diary(request):
 
             table.append(row)
 
-        return render(request, template, {'points':points_total, 'table':table})
+        return render(request, template, {
+            'points':points_total,
+            'table':table
+        })
 
     else:
         request.session['message'] = 'Stránka, ktorú chceš navštíviť vyžaduje prihlásenie. Najprv sa prihlás.'
@@ -459,9 +462,78 @@ def my_diary(request):
 ############
 
 ### Not done ###
-# login
 def view_action(request, action_id):
-    pass
+    if request.user.is_authenticated:
+        template = 'diary/view_action.html'
+
+        user = request.user
+        try:
+            profile = Account.objects.get(idUser=user)
+        except(Account.DoesNotExist):
+            request.session['message'] = ['warn','Profil pre tvoj účet neexistuje. Ak máš dojem, že by mal, kontaktuj admina.']
+            return redirect('diary:home')
+
+        try:
+            act = Action.objects.get(pk=action_id)
+        except(Action.DoesNotExist):
+            request.session['message'] = ['warn','Hľadaná položka neexistuje.']
+            return redirect('diary:home')
+
+        if act.idAccount != profile:
+            request.session['message'] = ['error','Táto akcia nie je tvoja. Nemôžeš si prezerať podrobnosti o akciách iných.']
+            return redirect('diary:home')
+
+        else:
+            if request.method == 'POST':
+                text = request.POST['send_text']
+
+                if text != '':
+                    Message.objects.create(
+                        from_user = user,
+                        idAction = act,
+                        content = text
+                    )
+
+                    return redirect('diary:view_action', action_id)
+
+            else:
+                hours = act.duration // 60
+                minits = act.duration - 60*hours
+
+                if hours == 1:
+                    h_str = 'hodina'
+                elif hours > 1 and hours < 5:
+                    h_str = 'hodiny'
+                else:
+                    h_str = 'hodín'
+
+                if minits == 1:
+                    m_str = 'minúta'
+                elif minits > 1 and minits < 5:
+                    m_str = 'minúty'
+                else:
+                    m_str = 'minút'
+
+                duration_string = str(hours) + ' ' + h_str + ' ' + str(minits) + ' ' + m_str
+                points = act.duration * act.idActivity.ppm
+                messages = Message.objects.filter(idAction=act).order_by('-time')
+
+                action = [
+                    act.idActivity.name,
+                    act.description,
+                    duration_string,
+                    points,
+                    act.date,
+                ]
+
+                return render(request, template, {
+                    'action':action,
+                    'messages':messages
+                })
+
+    else:
+        request.session['message'] = 'Stránka, ktorú chceš navštíviť vyžaduje prihlásenie. Najprv sa prihlás.'
+        return redirect('diary:log_in')
 
 # login
 def add_action(request):
