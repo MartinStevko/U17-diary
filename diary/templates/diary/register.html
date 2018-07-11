@@ -25,19 +25,19 @@
         <strong>Chyba!</strong> {{ error }}
       </div>
     {% endif %}
-    <form method="POST">
+    <form method="POST" autocomplete="off">
       {% csrf_token %}
       <label for="username">Používateľské meno</label>
       <br>
-      <input id="username" class="field" name="username" value="{{ username }}" type="text">
+      <input id="username" class="field" name="username" value="{{ username }}" type="text" required>
       <br>
       <label for="email">E-mail</label>
       <br>
-      <input id="email" class="field" name="email" value="{{ email }}" type="email">
+      <input id="email" class="field" name="email" value="{{ email }}" type="email" required>
       <br>
       <label for="club">Klub</label>
       <br>
-      <select id="club" class="field" name="club">
+      <select id="club" class="field" name="club" required>
         <option value="none">------------</option>
         {% for club in clubs %}
           <option value="{{ club.id }}">{{ club.name }}</option>
@@ -46,11 +46,11 @@
       <br>
       <label for="password">Heslo</label>
       <br>
-      <input id="password" class="field" name="password" type="password">
+      <input id="password" class="field" name="password" type="password" required>
       <br>
       <label for="password_again">Zopakuj heslo</label>
       <br>
-      <input id="password_again" class="field" name="password_again" type="password">
+      <input id="password_again" class="field" name="password_again" type="password" required>
       <br>
       <input type="submit" value="Vytvoriť účet">
     </form>

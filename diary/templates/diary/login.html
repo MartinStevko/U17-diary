@@ -35,11 +35,11 @@
       {% csrf_token %}
       <label for="username">Používateľské meno</label>
       <br>
-      <input id="username" class="field" name="username" type="text">
+      <input id="username" class="field" name="username" type="text" required>
       <br>
       <label for="password">Heslo</label>
       <br>
-      <input id="password" class="field" name="password" type="password">
+      <input id="password" class="field" name="password" type="password" required>
       <br>
       <input type="submit" value="Prihlásiť sa">
     </form>

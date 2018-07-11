@@ -25,7 +25,7 @@
         <strong>Chyba!</strong> {{ error }}
       </div>
     {% endif %}
-    <form method="POST">
+    <form method="POST" autocomplete="off">
       {% csrf_token %}
       <table class="profile">
         <tr>
@@ -34,20 +34,20 @@
         </tr>
         <tr>
           <td class="category">Používateľské meno:</td>
-          <td class="value"><input class="field" name="username" value="{{ user.username }}" type="text"></td>
+          <td class="value"><input class="field" name="username" value="{{ user.username }}" type="text" required></td>
         </tr>
         <tr>
           <td class="category">E-mail:</td>
           {% if new_email %}
-            <td class="value"><input class="field" name="email" value="{{ new_email }}" type="email"></td>
+            <td class="value"><input class="field" name="email" value="{{ new_email }}" type="email" required></td>
           {% else %}
-            <td class="value"><input class="field" name="email" value="{{ user.email }}" type="email"></td>
+            <td class="value"><input class="field" name="email" value="{{ user.email }}" type="email" required></td>
           {% endif %}
         </tr>
         <tr>
           <td class="category2">Klub:</td>
           <td class="value">
-            <select id="club" class="field" name="club">
+            <select id="club" class="field" name="club" required>
               <option value="{{ profile.club.id }}">{{ profile.club.name }}</option>
               {% for c in clubs %}
                 <option value="{{ c.id }}">{{ c.name }}</option>
