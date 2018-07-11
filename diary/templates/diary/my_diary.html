@@ -1,0 +1,45 @@
+{% extends 'diary/base.html' %}
+
+{% load staticfiles %}
+
+{% block title %}
+  <title>Denníček</title>
+{% endblock %}
+
+{% block bootstrap %}
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+{% endblock %}
+
+{% block css %}
+  <link rel="stylesheet" href="{% static 'css/diary.css' %}">
+{% endblock %}
+
+{% block content %}
+  <h1>Denníček</h1>
+  <div class="row_div">
+    <p id="points">Body spolu: <strong id="num">{{ points }}</strong></p>
+    <a id="add" href="{% url 'diary:add_action' %}"><strong>+</strong> Pridať aktivitu</a>
+  </div>
+  <div class="outside">
+    <div id="tableBox">
+      <div class="head row">
+        <div class="cell head left action"><span>Činnosť</span></div>
+        <div class="cell head description">Popis</div>
+        <div class="cell head duration">Trvanie</div>
+        <div class="cell head points">Body</div>
+        <div class="cell head time">Dátum a čas</div>
+        <div class="cell head right message"><i class="fa fa-envelope"></i></div>
+      </div>
+      {% for line in table %}
+        <a class="row" href="{% url 'diary:view_action' line.0 %}">
+          <div class="cell left action">{{ line.1 }}</div>
+          <div class="cell description">{{ line.2 }}</div>
+          <div class="cell duration">{{ line.3 }}</div>
+          <div class="cell points">{{ line.4 }}</div>
+          <div class="cell time">{{ line.5 }}</div>
+          <div class="cell right message">{{ line.6 }}</div>
+        </a>
+      {% endfor %}
+    </div>
+  </div>
+{% endblock %}

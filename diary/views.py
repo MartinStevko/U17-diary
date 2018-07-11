@@ -399,13 +399,66 @@ def change_profile(request):
     else:
         request.session['message'] = 'Stránka, ktorú chceš navštíviť vyžaduje prihlásenie. Najprv sa prihlás.'
         return redirect('diary:log_in')
+
+def my_diary(request):
+    if request.user.is_authenticated:
+        template = 'diary/my_diary.html'
+
+        user = request.user
+        try:
+            profile = Account.objects.get(idUser=user)
+        except(Account.DoesNotExist):
+            request.session['message'] = ['warn','Profil pre tvoj účet neexistuje. Ak máš dojem, že by mal, kontaktuj admina.']
+            return redirect('diary:home')
+
+        update_points(profile)
+        points_total = profile.points
+
+        actions = Action.objects.filter(idAccount=profile)
+        table = []
+
+        for act in actions:
+            hours = act.duration // 60
+            minits = act.duration - 60*hours
+
+            if hours == 1:
+                h_str = 'hodina'
+            elif hours > 1 and hours < 5:
+                h_str = 'hodiny'
+            else:
+                h_str = 'hodín'
+
+            if minits == 1:
+                m_str = 'minúta'
+            elif minits > 1 and minits < 5:
+                m_str = 'minúty'
+            else:
+                m_str = 'minút'
+
+            duration_string = str(hours) + ' ' + h_str + ' ' + str(minits) + ' ' + m_str
+            points = act.duration * act.idActivity.ppm
+            message_count = len(Message.objects.filter(idAction=act))
+
+            row = [
+                act.id,
+                act.idActivity.name,
+                act.description,
+                duration_string,
+                points,
+                act.date,
+                message_count
+            ]
+
+            table.append(row)
+
+        return render(request, template, {'points':points_total, 'table':table})
+
+    else:
+        request.session['message'] = 'Stránka, ktorú chceš navštíviť vyžaduje prihlásenie. Najprv sa prihlás.'
+        return redirect('diary:log_in')
 ############
 
 ### Not done ###
-# login
-def my_diary(request):
-    pass
-
 # login
 def view_action(request, action_id):
     pass

@@ -1,0 +1,157 @@
+#points {
+  margin: 0;
+  display: inline-block;
+  float: left;
+  height: 54px;
+  padding: 16px 10px;
+  font-size: 18px;
+}
+
+strong#num {
+  margin: 0;
+  margin-left: 30px;
+}
+
+#add {
+  margin: 0;
+  display: inline-block;
+  float: right;
+  height: 54px;
+  padding: 16px 30px;
+  border-radius: 6px;
+  text-decoration: none;
+  color: #f9f9f9;
+  background-color: #3c82f2;
+  font-size: 17px;
+  margin-bottom: 20px;
+}
+
+#add:hover {
+  background-color: #1067f2;
+}
+
+@media (max-width: 450px) {
+  #add {
+    float: left;
+  }
+}
+
+.row_div:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+#tableBox {
+  margin-top: 20px;
+  display: table;
+  width: 100%;
+  box-sizing: border-box;
+  min-width: 860px;
+}
+
+div.head.row {
+  display: table-row;
+  box-sizing: border-box;
+  color: #f9f9f9;
+  background-color: #3c82f2;
+  padding: 0 20px;
+}
+
+div.cell {
+  display: table-cell;
+  box-sizing: border-box;
+  border-bottom: 2px solid #bbb;
+  border-left: 1px solid #bbb;
+  border-right: 1px solid #bbb;
+}
+
+div.cell.head.left {
+  border-radius: 10px 0 0 0;
+}
+
+div.cell.head.right {
+  border-radius: 0 10px 0 0;
+}
+
+div.cell.left {
+  border-left: 2px solid #bbb;
+}
+
+div.cell.right {
+  border-right: 2px solid #bbb;
+}
+
+div.cell.head {
+  font-size: 17px;
+  padding: 15px 0;
+  text-align: center;
+  border: None;
+}
+
+.action {
+  width: 140px;
+  min-width: 140px;
+  max-width: 140px;
+  text-align: center;
+}
+
+.description {
+  width: 300px;
+  min-width: 300px;
+  max-width: 300px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.duration {
+  width: 140px;
+  min-width: 140px;
+  max-width: 140px;
+  text-align: center;
+}
+
+.points {
+  width: 60px;
+  min-width: 60px;
+  max-width: 60px;
+  text-align: center;
+}
+
+.time {
+  width: 180px;
+  min-width: 180px;
+  max-width: 180px;
+  text-align: center;
+}
+
+.message {
+  width: 50px;
+  min-width: 50px;
+  max-width: 50px;
+  text-align: center;
+}
+
+div.cell:not(.head) {
+  padding: 12px 10px;
+}
+
+a.row {
+  display: table-row;
+  box-sizing: border-box;
+  text-decoration: none;
+}
+
+a.row:hover {
+  background-color: #ddd;
+}
+
+i.fa-envelope {
+  margin: auto;
+  text-align: center;
+}
+
+.outside {
+  overflow-x: auto;
+}
