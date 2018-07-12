@@ -108,21 +108,16 @@ USE_TZ = True
 
 '''
 ### Deployment ### + set DEBUG = False
-STATIC_ROOT = '/var/www/nanet.pythonanywhere.com/static/' # for collectstatic command - '/home/nanet/SEN_eshop/static/'
-
-MEDIA_ROOT  = '/var/www/nanet.pythonanywhere.com/media/'
+STATIC_ROOT = '/var/www/repreU17.pythonanywhere.com/static/'
+# for collectstatic command - '/home/repreU17/U17-diary/static/'
 ##################
 '''
 
 ### Production ###
 STATIC_ROOT = os.path.dirname(os.path.abspath(__file__))
-
-MEDIA_ROOT  = os.path.join(BASE_DIR, 'media')
 ##################
 
 STATIC_URL = '/static/'
-
-MEDIA_URL = '/media/'
 
 admin.site.site_url = '/index'
 
