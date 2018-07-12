@@ -199,13 +199,15 @@ def register(request):
                         'email':email
                     })
 
-            else:
-                message = 'Zadaný e-mail sa už používa, vyber si iný.'
-                return render(request, template, {
-                    'clubs':clubs,
-                    'error':message,
-                    'username':username
-                })
+            except(User.MultipleObjectsReturned):
+                pass
+
+            message = 'Zadaný e-mail sa už používa, vyber si iný.'
+            return render(request, template, {
+                'clubs':clubs,
+                'error':message,
+                'username':username
+            })
 
         else:
             message = 'Zadané používateľské meno sa už používa, vyber si iné.'
@@ -236,6 +238,11 @@ def profile(request):
             profile = Account.objects.get(idUser=current_user)
         except(Account.DoesNotExist):
             request.session['message'] = ['warn','Profil pre tvoj účet neexistuje. Ak máš dojem, že by mal, kontaktuj admina.']
+            return redirect('diary:home')
+        except(Account.MultipleObjectsReturned):
+            message = 'Pre tvoj účet ({}) existuje viacero profilov. Kontaktuj admina stránky so žiadosťou o vyriešenie problému.'
+            DuplicateError.objects.create(idUser=request.user, error_message=message)
+            request.session['message'] = ['error', message]
             return redirect('diary:home')
 
         update_points(profile)
@@ -378,6 +385,15 @@ def change_profile(request):
                     current_user.email = new_email
                     current_user.save()
 
+                except(User.MultipleObjectsReturned):
+                    message = 'Zadaný e-mail sa už používa.'
+                    return render(request, template, {
+                        'profile':profile,
+                        'state':state,
+                        'clubs':clubs,
+                        'error':message
+                    })
+
                 else:
                     message = 'Zadaný e-mail sa už používa.'
                     return render(request, template, {
@@ -414,7 +430,7 @@ def my_diary(request):
         update_points(profile)
         points_total = profile.points
 
-        actions = Action.objects.filter(idAccount=profile)
+        actions = Action.objects.filter(idAccount=profile).order_by('-date')
         table = []
 
         for act in actions:
@@ -459,9 +475,7 @@ def my_diary(request):
     else:
         request.session['message'] = 'Stránka, ktorú chceš navštíviť vyžaduje prihlásenie. Najprv sa prihlás.'
         return redirect('diary:log_in')
-############
 
-### Not done ###
 def view_action(request, action_id):
     if request.user.is_authenticated:
         template = 'diary/view_action.html'
@@ -535,10 +549,137 @@ def view_action(request, action_id):
         request.session['message'] = 'Stránka, ktorú chceš navštíviť vyžaduje prihlásenie. Najprv sa prihlás.'
         return redirect('diary:log_in')
 
-# login
 def add_action(request):
-    pass
+    template = 'diary/add_action.html'
 
+    if request.user.is_authenticated:
+        activities = Activity.objects.all()
+
+        if request.method == 'POST':
+            activity_id = request.POST['activity']
+            dur_hours = request.POST['hours']
+            dur_minutes = request.POST['minits']
+            description = request.POST['description']
+            datetime = request.POST['datetime']
+
+            try:
+                activity_id = int(activity_id)
+                activity = Activity.objects.get(pk=activity_id)
+            except(ValueError, Activity.DoesNotExist):
+                message = 'Vyber si aktivitu zo zoznamu.'
+                return render(request, template, {
+                    'activities':activities,
+                    'dur_hours':dur_hours,
+                    'dur_minutes':dur_minutes,
+                    'description':description,
+                    'datetime':datetime
+                })
+
+            try:
+                profile = Account.objects.get(idUser=request.user)
+            except(Account.DoesNotExist):
+                request.session['message'] = ['error','Profil pre tvoj účet neexistuje. Nemôžeš pridávať aktivity.']
+                return redirect('diary:domov')
+
+            duration = int(dur_hours)*60 + int(dur_minutes)
+
+            try:
+                i = datetime.find('-')
+                year_ = int(datetime[0:i])
+                datetime = datetime[(i+1):]
+
+                i = datetime.find('-')
+                month_ = int(datetime[0:i])
+                datetime = datetime[(i+1):]
+
+                i = datetime.find('T')
+                day_ = int(datetime[0:i])
+                datetime = datetime[(i+1):]
+
+                i = datetime.find(':')
+                hour_ = int(datetime[0:i])
+                datetime = datetime[(i+1):]
+
+                minute_ = int(datetime)
+            except(ValueError):
+                date = False
+            else:
+                date = datetime(year_, month_, day_, hour_, minute_)
+
+            if date:
+                action = Action.objects.create(
+                    idAccount = profile,
+                    idActivity = activity,
+                    duration = duration,
+                    description = description,
+                    date = date
+                )
+            else:
+                action = Action.objects.create(
+                    idAccount = profile,
+                    idActivity = activity,
+                    duration = duration,
+                    description = description
+                )
+
+            action.save()
+            update_points(profile)
+
+            new_points = action.duration * activity.ppm
+
+            first_date = date(2018, 7, 5)
+            delta = datetime.now().date() - first_date
+            week_number = delta // 7 + 1
+
+            try:
+                week = Week.objects.get(idAccount=profile, ordinal_number=week_number)
+            except(Week.DoesNotExist):
+                week = Week.objects.create(
+                    idAccount = profile,
+                    ordinal_number = week_number,
+                    points = new_points
+                )
+                week.save()
+            except(Week.MultipleObjectsReturned):
+                message = "Add Action - v databáze týždňov (Week) sa vyskytuje viacero týždňov pre účet {} s poradovým číslom {}".format(profile.idUser.username, ordinal_number)
+                DuplicateError.objects.create(idUser=request.user, error_message=message)
+
+                week = Week.objects.filter(idAccount=profile, ordinal_number=week_number)[0]
+
+            week.points += new_points
+            week.save()
+
+        else:
+            now_time = datetime.now()
+            time_string = ''
+            time_string += str(now_time.year) + '-'
+            if now_time.month < 10:
+                time_string += '0' + str(now_time.month) + '-'
+            else:
+                time_string += str(now_time.month) + '-'
+            if now_time.day < 10:
+                time_string += '0' + str(now_time.day) + 'T'
+            else:
+                time_string += str(now_time.day) + 'T'
+            if now_time.hour < 10:
+                time_string += '0' + str(now_time.hour) + ':'
+            else:
+                time_string += str(now_time.hour) + ':'
+            if now_time.minute < 10:
+                time_string += '0' + str(now_time.minute)
+            else:
+                time_string += str(now_time.minute)
+
+            return render(request, template, {
+                'activities':activities,
+                'now':time_string
+            })
+    else:
+        request.session['message'] = 'Stránka, ktorú chceš navštíviť vyžaduje prihlásenie. Najprv sa prihlás.'
+        return redirect('diary:log_in')
+############
+
+### Not done ###
 # login, approved
 def graph(request):
     pass

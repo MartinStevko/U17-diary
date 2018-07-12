@@ -35,16 +35,29 @@
       <br>
       <label for="password">Trvanie</label>
       <br>
-      <input id="password" class="field" name="hours" type="number" value="0" required> hodín
-      <input id="password" class="field" name="minits" type="number" value="0" required> minút
+      {% if dur_hours %}
+        <input id="password" class="field" name="hours" type="number" value="{{ dur_hours }}" required> hodín
+        <input id="password" class="field" name="minits" type="number" value="{{ dur_minutes }}" required> minút
+      {% else %}
+        <input id="password" class="field" name="hours" type="number" value="0" required> hodín
+        <input id="password" class="field" name="minits" type="number" value="0" required> minút
+      {% endif %}
       <br>
       <label for="password_again">Stručný popis alebo iná poznámka (voliteľné)</label>
       <br>
-      <textarea id="password_again" class="field" name="description"></textarea>
-      <br>
-      <label for="time">Dátum a čas</label>
-      <br>
-      <input id="time" type="datetime-local" name="datetime" value="{{ now }}" required>
+      {% if datetime %}
+        <textarea id="password_again" class="field" name="description">{{ description }}</textarea>
+        <br>
+        <label for="time">Dátum a čas</label>
+        <br>
+        <input id="time" type="datetime-local" name="datetime" value="{{ datetime }}" required>
+      {% else %}
+        <textarea id="password_again" class="field" name="description"></textarea>
+        <br>
+        <label for="time">Dátum a čas</label>
+        <br>
+        <input id="time" type="datetime-local" name="datetime" value="{{ now }}" required>
+      {% endif %}
       <br>
       <div class="submit">
         <input type="submit" value="Pridať">
