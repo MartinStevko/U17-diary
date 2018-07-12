@@ -289,6 +289,11 @@ def change_profile(request):
         except(Account.DoesNotExist):
             request.session['message'] = ['warn','Profil pre tvoj účet neexistuje. Ak máš dojem, že by mal, kontaktuj admina.']
             return redirect('diary:home')
+        except(Account.MultipleObjectsReturned):
+            message = 'Pre tvoj účet ({}) existuje viacero profilov. Kontaktuj admina stránky so žiadosťou o vyriešenie problému.'
+            DuplicateError.objects.create(idUser=request.user, error_message=message)
+            request.session['message'] = ['error', message]
+            return redirect('diary:home')
 
         update_points(profile)
 
@@ -426,6 +431,11 @@ def my_diary(request):
         except(Account.DoesNotExist):
             request.session['message'] = ['warn','Profil pre tvoj účet neexistuje. Ak máš dojem, že by mal, kontaktuj admina.']
             return redirect('diary:home')
+        except(Account.MultipleObjectsReturned):
+            message = 'Pre tvoj účet ({}) existuje viacero profilov. Kontaktuj admina stránky so žiadosťou o vyriešenie problému.'
+            DuplicateError.objects.create(idUser=request.user, error_message=message)
+            request.session['message'] = ['error', message]
+            return redirect('diary:home')
 
         update_points(profile)
         points_total = profile.points
@@ -485,6 +495,11 @@ def view_action(request, action_id):
             profile = Account.objects.get(idUser=user)
         except(Account.DoesNotExist):
             request.session['message'] = ['warn','Profil pre tvoj účet neexistuje. Ak máš dojem, že by mal, kontaktuj admina.']
+            return redirect('diary:home')
+        except(Account.MultipleObjectsReturned):
+            message = 'Pre tvoj účet ({}) existuje viacero profilov. Kontaktuj admina stránky so žiadosťou o vyriešenie problému.'
+            DuplicateError.objects.create(idUser=request.user, error_message=message)
+            request.session['message'] = ['error', message]
             return redirect('diary:home')
 
         try:
@@ -580,6 +595,11 @@ def add_action(request):
             except(Account.DoesNotExist):
                 request.session['message'] = ['error','Profil pre tvoj účet neexistuje. Nemôžeš pridávať aktivity.']
                 return redirect('diary:domov')
+            except(Account.MultipleObjectsReturned):
+                message = 'Pre tvoj účet ({}) existuje viacero profilov. Kontaktuj admina stránky so žiadosťou o vyriešenie problému.'
+                DuplicateError.objects.create(idUser=request.user, error_message=message)
+                request.session['message'] = ['error', message]
+                return redirect('diary:home')
 
             duration = int(dur_hours)*60 + int(dur_minutes)
 
@@ -682,7 +702,12 @@ def add_action(request):
 ### Not done ###
 # login, approved
 def graph(request):
-    pass
+    if request.user.is_authenticated:
+
+
+    else:
+        request.session['message'] = 'Stránka, ktorú chceš navštíviť vyžaduje prihlásenie. Najprv sa prihlás.'
+        return redirect('diary:log_in')
 
 # staff
 def activities(request):
