@@ -28,7 +28,10 @@ urlpatterns = [
     path('diary/user/<str:username>/action/<int:action_id>', views.not_my_action, name='not_my_action'),
     path('diary/user/<str:username>', views.not_my_diary, name='not_my_diary'),
     ####################
-    
+
     path('index', views.index, name='index'),
-    path('', views.other),
+    path('', views.other, name='other'),
 ]
+
+handler404 = views.handler404
+handler500 = views.handler500
