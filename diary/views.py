@@ -184,6 +184,12 @@ def register(request):
                 if password == password_again:
                     user = User.objects.create_user(username, email, password)
                     profile = Account.objects.create(idUser=user, club=club)
+                    profile.save()
+                    Week.objects.create(
+                        idAccount = profile,
+                        ordinal_number = 0,
+                        points = 0
+                    )
 
                     login(request, user)
 
