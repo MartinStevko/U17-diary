@@ -766,7 +766,14 @@ def graph(request):
             week_str = str(i) + '.'
             for week in weeks:
                 name_ = str(week.idAccount.idUser.username)
-                points_ = str(week.points)
+
+                previous_weeks = Week.objects.filter(idAccount=week.idAccount)
+                previous_points = 0
+                for w in previous_weeks:
+                    if w.ordinal_number < i:
+                        previous_points += w.points
+
+                points_ = str(week.points + previous_points)
 
                 week_data.append([name_, points_])
             data.append([week_str, week_data])
