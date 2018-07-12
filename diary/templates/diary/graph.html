@@ -1,0 +1,85 @@
+{% extends 'diary/base.html' %}
+
+{% block title %}
+  <title>Graf</title>
+{% endblock %}
+
+{% block bootstrap %}
+  <script type="text/javascript" src="https://www.amcharts.com/lib/3/amcharts.js"></script>
+  <script type="text/javascript" src="https://www.amcharts.com/lib/3/serial.js"></script>
+{% endblock %}
+
+{% block css %}
+  <style>
+    #chartdiv {
+      width: 100%;
+      height: 80%;
+    }
+  </style>
+  <script type="text/javascript">
+			AmCharts.makeChart("chartdiv",
+				{
+					"type": "serial",
+					"categoryField": "week",
+					"startDuration": 0,
+					"fontSize": 14,
+					"categoryAxis": {
+						"gridPosition": "start"
+					},
+					"trendLines": [],
+					"graphs": [
+            {% for player in players %}
+  						{
+  							"balloonText": "[[title]]:<b>[[value]]</b>",
+  							"bullet": "round",
+  							"id": "{{ player }}",
+  							"title": "{{ player }}",
+  							"type": "smoothedLine",
+  							"valueField": "{{ player }}"
+  						},
+            {% endfor %}
+					],
+					"guides": [],
+					"valueAxes": [
+						{
+							"id": "ValueAxis-1",
+							"title": "Body"
+						}
+					],
+					"allLabels": [],
+					"balloon": {},
+					"legend": {
+						"enabled": true,
+						"useGraphSettings": false
+					},
+					"titles": [
+						{
+							"id": "Title-1",
+							"size": 15,
+							"text": "Spoločný graf (x - body, y - poradové číslo týždňa)"
+						}
+					],
+					"dataProvider": [
+            {% for week in data %}
+  						{
+                {% for player in week.1 %}
+  							  "{{ player.0 }}": "{{ player.1 }}",
+  							{% endfor %}
+  							"week": "{{ week.0 }}"
+  						},
+            {% endfor %}
+					]
+				}
+			);
+	</script>
+{% endblock %}
+
+{% block content %}
+  <div id="chartdiv"></div>
+  {% for week in data %}
+      {% for player in week.1 %}
+        {{ player.0 }}: {{ player.1 }},
+      {% endfor %}
+      "week": {{ week.0 }}
+  {% endfor %}
+{% endblock %}

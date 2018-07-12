@@ -8,6 +8,12 @@ from django.contrib.auth.models import User
 from .models import *
 
 ### Done ###
+def handler404(request):
+    return render(request, '404.html', status=404)
+
+def handler500(request):
+    return render(request, '500.html', status=500)
+
 def index(request):
     template = 'diary/index.html'
 
@@ -63,7 +69,7 @@ def other(request):
     request.session['message'] = ['warn','Hľadaná stránka nebola nájdená.']
 
     if request.user.is_authenticated:
-        return redirect('diary:domov')
+        return redirect('diary:home')
     else:
         return redirect('diary:index')
 
@@ -575,7 +581,7 @@ def add_action(request):
             dur_hours = request.POST['hours']
             dur_minutes = request.POST['minits']
             description = request.POST['description']
-            datetime = request.POST['datetime']
+            datetime_ = request.POST['datetime']
 
             try:
                 activity_id = int(activity_id)
@@ -587,7 +593,7 @@ def add_action(request):
                     'dur_hours':dur_hours,
                     'dur_minutes':dur_minutes,
                     'description':description,
-                    'datetime':datetime
+                    'datetime':datetime_
                 })
 
             try:
@@ -604,35 +610,35 @@ def add_action(request):
             duration = int(dur_hours)*60 + int(dur_minutes)
 
             try:
-                i = datetime.find('-')
-                year_ = int(datetime[0:i])
-                datetime = datetime[(i+1):]
+                i = datetime_.find('-')
+                year_ = int(datetime_[0:i])
+                datetime_ = datetime_[(i+1):]
 
-                i = datetime.find('-')
-                month_ = int(datetime[0:i])
-                datetime = datetime[(i+1):]
+                i = datetime_.find('-')
+                month_ = int(datetime_[0:i])
+                datetime_ = datetime_[(i+1):]
 
-                i = datetime.find('T')
-                day_ = int(datetime[0:i])
-                datetime = datetime[(i+1):]
+                i = datetime_.find('T')
+                day_ = int(datetime_[0:i])
+                datetime_ = datetime_[(i+1):]
 
-                i = datetime.find(':')
-                hour_ = int(datetime[0:i])
-                datetime = datetime[(i+1):]
+                i = datetime_.find(':')
+                hour_ = int(datetime_[0:i])
+                datetime_ = datetime_[(i+1):]
 
-                minute_ = int(datetime)
+                minute_ = int(datetime_)
             except(ValueError):
-                date = False
+                date_ = False
             else:
-                date = datetime(year_, month_, day_, hour_, minute_)
+                date_ = datetime(year_, month_, day_, hour_, minute_)
 
-            if date:
+            if date_:
                 action = Action.objects.create(
                     idAccount = profile,
                     idActivity = activity,
                     duration = duration,
                     description = description,
-                    date = date
+                    date = date_
                 )
             else:
                 action = Action.objects.create(
@@ -648,8 +654,8 @@ def add_action(request):
             new_points = action.duration * activity.ppm
 
             first_date = date(2018, 7, 5)
-            delta = datetime.now().date() - first_date
-            week_number = delta // 7 + 1
+            delta = action.date.date() - first_date
+            week_number = delta.days // 7 + 1
 
             try:
                 week = Week.objects.get(idAccount=profile, ordinal_number=week_number)
@@ -668,6 +674,8 @@ def add_action(request):
 
             week.points += new_points
             week.save()
+
+            return redirect('diary:my_diary')
 
         else:
             now_time = datetime.now()
@@ -697,18 +705,80 @@ def add_action(request):
     else:
         request.session['message'] = 'Stránka, ktorú chceš navštíviť vyžaduje prihlásenie. Najprv sa prihlás.'
         return redirect('diary:log_in')
-############
 
-### Not done ###
-# login, approved
+def week_rapair(weeks, week_number):
+    previous_ordinal = 0
+    for i in range(week_number + 1):
+        try:
+            ord_ = weeks[i].ordinal_number
+        except(IndexError):
+            ord_ = week_number + 1
+        while previous_ordinal + 1 < ord_:
+            Week.objects.create(
+                idAccount = week[0].idAccount,
+                ordinal_number = previous_ordinal + 1,
+                points = 0
+            )
+            previous_ordinal += 1
+
+        if previous_ordinal + 1 > ord_:
+            pass
+        else:
+            previous_ordinal += 1
+
 def graph(request):
     if request.user.is_authenticated:
+        if request.user.is_staff:
+            pass
+        else:
+            try:
+                profile = Account.objects.get(idUser=request.user)
+            except(Account.DoesNotExist):
+                request.session['message'] = ['warn','Profil pre tvoj účet neexistuje. Ak máš dojem, že by mal, kontaktuj admina.']
+                return redirect('diary:home')
+            except(Account.MultipleObjectsReturned):
+                message = 'Pre tvoj účet ({}) existuje viacero profilov. Kontaktuj admina stránky so žiadosťou o vyriešenie problému.'
+                DuplicateError.objects.create(idUser=request.user, error_message=message)
+                request.session['message'] = ['error', message]
+                return redirect('diary:home')
 
+            if profile.approved == False:
+                request.session['message'] = ['info','Tvoj účet ešte nebol schválený. Musíš počkať, kým to niekto z coachov spraví a až potom budeš môcť vidieť ako sa darí zvyšku.']
+                return redirect('diary:home')
+
+        template = 'diary/graph.html'
+
+        first_date = date(2018, 7, 5)
+        delta = datetime.now().date() - first_date
+        week_number = delta.days // 7 + 1
+
+        players = []
+        accounts = Account.objects.filter(approved=True).order_by('pk')
+        for acc in accounts:
+            players.append(acc.idUser.username)
+            weeks = Week.objects.filter(idAccount=acc).order_by('ordinal_number')
+            week_rapair(weeks, week_number)
+
+        data = []
+        for i in range(week_number + 1):
+            weeks = Week.objects.filter(ordinal_number=i).order_by('idAccount_id')
+            week_data = []
+            week_str = str(i) + '.'
+            for week in weeks:
+                name_ = str(week.idAccount.idUser.username)
+                points_ = str(week.points)
+
+                week_data.append([name_, points_])
+            data.append([week_str, week_data])
+
+        return render(request, template, {'players':players, 'data':data})
 
     else:
         request.session['message'] = 'Stránka, ktorú chceš navštíviť vyžaduje prihlásenie. Najprv sa prihlás.'
         return redirect('diary:log_in')
+############
 
+### Not done ###
 # staff
 def activities(request):
     pass

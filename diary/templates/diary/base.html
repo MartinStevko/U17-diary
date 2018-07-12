@@ -37,10 +37,10 @@
         <a href="{% url 'diary:all_diaries' %}" class="w3-bar-item w3-button">Všetky denníčky</a>
       {% else %}
         <a href="{% url 'diary:profile' %}" class="w3-bar-item w3-button">Môj profil</a>
-        <a href="{% url 'diary:graph' %}" class="w3-bar-item w3-button">Graf</a>
         <a href="{% url 'diary:my_diary' %}" class="w3-bar-item w3-button">Môj denník</a>
         <a href="{% url 'diary:add_action' %}" class="w3-bar-item w3-button">Pridať aktivitu</a>
       {% endif %}
+      <a href="{% url 'diary:graph' %}" class="w3-bar-item w3-button">Graf</a>
       <a href="{% url 'diary:log_out' %}" class="w3-bar-item w3-button">Odhlásiť sa</a>
     </div>
 
