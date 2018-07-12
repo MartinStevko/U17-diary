@@ -32,6 +32,3 @@ urlpatterns = [
     path('index', views.index, name='index'),
     path('', views.other, name='other'),
 ]
-
-handler404 = views.handler404
-handler500 = views.handler500
