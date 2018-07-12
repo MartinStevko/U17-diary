@@ -47,7 +47,7 @@ class Action(models.Model):
 
     duration = models.PositiveIntegerField(default=0)
 
-    description = models.TextField()
+    description = models.TextField(blank=True)
     date = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
@@ -68,11 +68,13 @@ class Message(models.Model):
     def __str__(self):
         return "{} - {}".format(self.from_user.username, self.time)
 
-class Change(models.Model):
-    idUser = models.ForeignKey(User, on_delete=models.CASCADE)
+class DuplicateError(models.Model):
     time = models.DateTimeField(default=timezone.now)
 
-    description = models.TextField()
+    idUser = models.ForeignKey(User, on_delete=models.CASCADE)
+    error_message = models.TextField(blank=False)
+
+    solved = models.BooleanField(default=False)
 
     def __str__(self):
-        return "{}".format(self.time)
+        return "{} - {}".format(self.time, self.idUser.username)

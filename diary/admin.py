@@ -12,4 +12,4 @@ admin.site.register(Week)
 admin.site.register(Activity)
 admin.site.register(Message)
 
-admin.site.register(Change)
+admin.site.register(DuplicateError)
