@@ -119,6 +119,8 @@ STATIC_ROOT = os.path.dirname(os.path.abspath(__file__))
 
 STATIC_URL = '/static/'
 
+LOGIN_URL = 'diary:log_in'
+
 admin.site.site_url = '/index'
 
 # SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'
