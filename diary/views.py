@@ -805,13 +805,50 @@ def graph(request):
         request.session['message'] = 'Stránka, ktorú chceš navštíviť vyžaduje prihlásenie. Najprv sa prihlás.'
         request.session['back_redirection'] = 'graph'
         return redirect('diary:log_in')
+
+def activities(request):
+    template = 'diary/non_staff_activities.html'
+
+    activities_ = Activity.objects.all()
+    return render(request, template, {'activities':activities_})
 ############
 
 ### Not done ###
 @login_required
 @permission_required('user.is_staff', raise_exception=True)
-def activities(request):
-    pass
+def staff_activities(request):
+    template = 'diary/staff_activities.html'
+
+    activities_ = Activity.objects.all()
+
+    if request.method == 'POST':
+        activity_value = []
+        for activity in activities_:
+            id_string = str(activity.id)
+            try:
+                activity_value.append(int(request.POST[id_string])
+            except(ValueError):
+                pass
+
+        if len(activities_) == len(activity_value):
+            i = 0
+            for activity in activities_:
+                activity.ppm = activity_value[i]
+                activity.save()
+                i += 1
+
+            activities_ = Activity.objects.all()
+            return redirect('diary:staff_activities')
+
+        else:
+            message_ = 'Údaje neboli zmenené. Jeden alebo viacero údajov chýba.'
+            return render(request, template, {
+                'activities':activities_,
+                'error':message_
+            })
+
+    else:
+        return render(request, template, {'activities':activities_})
 
 @login_required
 @permission_required('user.is_staff', raise_exception=True)

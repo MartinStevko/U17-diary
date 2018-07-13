@@ -19,10 +19,11 @@ urlpatterns = [
     path('diary/my', views.my_diary, name='my_diary'),
     path('diary/action/<int:action_id>', views.view_action, name='view_action'),
     path('diary/action/add', views.add_action, name='add_action'),
+    path('diary/activities', views.activities, name='activities'),
     ################
 
     ### Staff things ###
-    path('activity/list', views.activities, name='activities'),
+    path('activity/list', views.staff_activities, name='staff_activities'),
     path('activity/add', views.add_activity, name='add_activity'),
     path('diary/list', views.all_diaries, name='all_diaries'),
     path('diary/user/<str:username>/action/<int:action_id>', views.not_my_action, name='not_my_action'),
