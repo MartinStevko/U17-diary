@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.db.models import Q
+from django.contrib.auth.decorators import login_required, permission_required
 
 from datetime import datetime, timedelta, date
 
@@ -25,8 +26,10 @@ def index(request):
             return render(request, template, {'warn':message[1]})
         elif message[0] == 'error':
             return render(request, template, {'error':message[1]})
-        else:
+        elif message[0] == 'info':
             return render(request, template, {'info':message[1]})
+        else:
+            return render(request, template, {'info':message})
 
     else:
         return render(request, template, {})
@@ -49,8 +52,10 @@ def home(request):
                 return render(request, template, {'warn':message[1]})
             elif message[0] == 'error':
                 return render(request, template, {'error':message[1]})
-            else:
+            elif message[0] == 'info':
                 return render(request, template, {'info':message[1]})
+            else:
+                return render(request, template, {'info':message})
 
         else:
             return render(request, template, {})
@@ -803,22 +808,27 @@ def graph(request):
 ############
 
 ### Not done ###
-# staff
+@login_required
+@permission_required('user.is_staff', raise_exception=True)
 def activities(request):
     pass
 
-# staff
+@login_required
+@permission_required('user.is_staff', raise_exception=True)
 def add_activity(request):
     pass
 
-# staff
+@login_required
+@permission_required('user.is_staff', raise_exception=True)
 def all_diaries(request):
     pass
 
-# staff
+@login_required
+@permission_required('user.is_staff', raise_exception=True)
 def not_my_diary(request, username):
     pass
 
-# staff
+@login_required
+@permission_required('user.is_staff', raise_exception=True)
 def not_my_action(request, username, action_id):
     pass
