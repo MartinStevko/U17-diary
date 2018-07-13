@@ -57,6 +57,7 @@ def home(request):
 
     else:
         request.session['message'] = 'Stránka, ktorú chceš navštíviť vyžaduje prihlásenie. Najprv sa prihlás.'
+        request.session['back_redirection'] = 'home'
         return redirect('diary:log_in')
 
 def other(request):
@@ -77,7 +78,17 @@ def log_in(request):
 
         if user is not None:
             login(request, user)
-            return redirect('diary:home')
+
+            try:
+                back_redirection = request.session['back_redirection']
+            except(KeyError):
+                back_redirection = None;
+
+            if back_redirection:
+                redirect_string = 'diary:' + back_redirection
+                return redirect(redirect_string)
+            else:
+                return redirect('diary:home')
 
         else:
             message = 'Zadané používateľské meno alebo heslo je neprávne.'
@@ -283,6 +294,7 @@ def profile(request):
 
     else:
         request.session['message'] = 'Stránka, ktorú chceš navštíviť vyžaduje prihlásenie. Najprv sa prihlás.'
+        request.session['back_redirection'] = 'profile'
         return redirect('diary:log_in')
 
 def change_profile(request):
@@ -425,6 +437,7 @@ def change_profile(request):
 
     else:
         request.session['message'] = 'Stránka, ktorú chceš navštíviť vyžaduje prihlásenie. Najprv sa prihlás.'
+        request.session['back_redirection'] = 'change_profile'
         return redirect('diary:log_in')
 
 def my_diary(request):
@@ -490,6 +503,7 @@ def my_diary(request):
 
     else:
         request.session['message'] = 'Stránka, ktorú chceš navštíviť vyžaduje prihlásenie. Najprv sa prihlás.'
+        request.session['back_redirection'] = 'my_diary'
         return redirect('diary:log_in')
 
 def view_action(request, action_id):
@@ -568,6 +582,7 @@ def view_action(request, action_id):
 
     else:
         request.session['message'] = 'Stránka, ktorú chceš navštíviť vyžaduje prihlásenie. Najprv sa prihlás.'
+        request.session['back_redirection'] = 'view_action'
         return redirect('diary:log_in')
 
 def add_action(request):
@@ -704,6 +719,7 @@ def add_action(request):
             })
     else:
         request.session['message'] = 'Stránka, ktorú chceš navštíviť vyžaduje prihlásenie. Najprv sa prihlás.'
+        request.session['back_redirection'] = 'add_action'
         return redirect('diary:log_in')
 
 def week_rapair(weeks, week_number):
@@ -782,6 +798,7 @@ def graph(request):
 
     else:
         request.session['message'] = 'Stránka, ktorú chceš navštíviť vyžaduje prihlásenie. Najprv sa prihlás.'
+        request.session['back_redirection'] = 'graph'
         return redirect('diary:log_in')
 ############
 
