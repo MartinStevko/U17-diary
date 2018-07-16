@@ -3,7 +3,11 @@
 {% load staticfiles %}
 
 {% block title %}
-  <title>Denníček</title>
+  {% if user.is_staff %}
+    <title>Denníček {{ diary_username }}</title>
+  {% else %}
+    <title>Denníček</title>
+  {% endif %}
 {% endblock %}
 
 {% block bootstrap %}
@@ -16,7 +20,7 @@
 
 {% block content %}
   <div class="row_div">
-    <a id="add" href="{% url 'diary:my_diary' %}">
+    <a id="add" href="{% url 'diary:not_my_diary' diary_username %}">
       <i class="fa fa-arrow-left"></i>
       Späť na denník
     </a>

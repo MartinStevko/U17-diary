@@ -867,9 +867,128 @@ def all_diaries(request):
 @login_required
 @permission_required('user.is_staff', raise_exception=True)
 def not_my_diary(request, username):
-    pass
+    template = 'diary/my_diary.html'
+
+    try:
+        user_ = User.objects.get(username=username)
+        profile = Account.objects.get(idUser=user_)
+    except(User.DoesNotExist, Account.DoesNotExist):
+        request.session['message'] = ['warn','Denníček hľadaného hráča neexistuje.']
+        return redirect('diary:home')
+
+    update_points(profile)
+    points_total = profile.points
+
+    actions = Action.objects.filter(idAccount=profile).order_by('-date')
+    table = []
+
+    for act in actions:
+        hours = act.duration // 60
+        minits = act.duration - 60*hours
+
+        if hours == 1:
+            h_str = 'hodina'
+        elif hours > 1 and hours < 5:
+            h_str = 'hodiny'
+        else:
+            h_str = 'hodín'
+
+        if minits == 1:
+            m_str = 'minúta'
+        elif minits > 1 and minits < 5:
+            m_str = 'minúty'
+        else:
+            m_str = 'minút'
+
+        duration_string = str(hours) + ' ' + h_str + ' ' + str(minits) + ' ' + m_str
+        points = act.duration * act.idActivity.ppm
+        message_count = len(Message.objects.filter(idAction=act))
+
+        row = [
+            act.id,
+            act.idActivity.name,
+            act.description,
+            duration_string,
+            points,
+            act.date,
+            message_count
+        ]
+
+        table.append(row)
+
+    return render(request, template, {
+        'diary_user':user_,
+        'points':points_total,
+        'table':table
+    })
 
 @login_required
 @permission_required('user.is_staff', raise_exception=True)
 def not_my_action(request, username, action_id):
-    pass
+    template = 'diary/view_action.html'
+
+    try:
+        user_ = User.objects.get(username=username)
+        profile = Account.objects.get(idUser=user_)
+    except(User.DoesNotExist, Account.DoesNotExist):
+        request.session['message'] = ['warn','Denníček hľadaného hráča neexistuje.']
+        return redirect('diary:home')
+
+    try:
+        act = Action.objects.get(pk=action_id)
+    except(Action.DoesNotExist):
+        request.session['message'] = ['warn','Hľadaná položka neexistuje.']
+        return redirect('diary:home')
+
+    if act.idAccount != profile:
+        request.session['message'] = ['error','Táto akcia nie je tvoja. Nemôžeš si prezerať podrobnosti o akciách iných.']
+        return redirect('diary:home')
+
+    else:
+        if request.method == 'POST':
+            text = request.POST['send_text']
+
+            if text != '':
+                Message.objects.create(
+                    from_user = request.user,
+                    idAction = act,
+                    content = text
+                )
+
+                return redirect('diary:not_my_action', username, action_id)
+
+        else:
+            hours = act.duration // 60
+            minits = act.duration - 60*hours
+
+            if hours == 1:
+                h_str = 'hodina'
+            elif hours > 1 and hours < 5:
+                h_str = 'hodiny'
+            else:
+                h_str = 'hodín'
+
+            if minits == 1:
+                m_str = 'minúta'
+            elif minits > 1 and minits < 5:
+                m_str = 'minúty'
+            else:
+                m_str = 'minút'
+
+            duration_string = str(hours) + ' ' + h_str + ' ' + str(minits) + ' ' + m_str
+            points = act.duration * act.idActivity.ppm
+            messages = Message.objects.filter(idAction=act).order_by('-time')
+
+            action = [
+                act.idActivity.name,
+                act.description,
+                duration_string,
+                points,
+                act.date,
+            ]
+
+            return render(request, template, {
+                'diary_username': username,
+                'action':action,
+                'messages':messages
+            })
