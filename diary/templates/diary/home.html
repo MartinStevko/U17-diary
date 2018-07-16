@@ -10,6 +10,15 @@
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 {% endblock %}
 
+{% block css %}
+  <style>
+    span#burger:hover {
+      background-color: #e2e2e2;
+      font-weight: bold;
+    }
+  </style>
+{% endblock %}
+
 {% block content %}
   <h1>Kondičný denník</h1>
   {% if success %}
@@ -37,8 +46,59 @@
     </div>
   {% endif %}
   <h3>Ako to funguje?</h3>
+  <p>
+    Z pravidla všetko čo na stránke dokážeš robiť nájdeš do 3 kliknutí
+    a teda vačšinou ti bude stačiť používať "burger menu"
+    (<span id="burger">&#9776;</span>) vľavo hore. Kliknutím na toto menu sa
+    ti zobrazia všetky užitočné linky na podstránky. Pozor, toto menu uvidíš
+    len ak si prihlásená.
+  </p>
+  <br>
   {% if user.is_staff %}
+    <p>
+      <b>Domov</b> - stránka, na ktorej sa momentálne nachádzaš.
+    </p>
+    <p>
+      <b>Admin</b> - stránka s administrátorským rozhraním. Vidíš tam síce všetko,
+      ale nemala by to byť stránka, ktorú bežne používaš, lebo hocijaká akcia
+      spravená tam je nevratná.
+    </p>
+    <p>
+      <b>Aktivity</b> - tu prebieha celý management aktivít, ktoré sú si baby
+      schopné zapísať do denníčkov, dajú sa tu pridávať aktivity, meniť bodové
+      ohodnotenie aktivít, ale aj len zobraziť všetky dostupné aktivity.
+    </p>
+    <p>
+      <b>Denníčky</b> - prístupový bod k jednotlivým denníčkom báb.
+    </p>
+    <p>
+      <b>Graf</b> - porovnanie bodových hodnotení po týždňoch všetkých báb.
+    </p>
   {% else %}
+    <p>
+      <b>Domov</b> - stránka, na ktorej sa momentálne nachádzaš.
+    </p>
+    <p>
+      <b>Môj profil</b> - náhľad údajov v tvojom profile spolu s grafom, kde Vidíš
+      koľko bodov si získala v ktorý deň. Tu môžeš aj zmeniť svoj profil.
+    </p>
+    <p>
+      <b>Môj denník</b> - tvoj denník, kde vidíš zoznam všetkého čo si robila
+      spolu s dátumom (v anglickom formáte). Kliknutím na niektorú z aktivít
+      uvidíš aj komentáre trénerov.
+    </p>
+    <p>
+      <b>Zoznam aktivít</b> - vidíš tu zoznam všetkých dostupných aktivít, ktoré
+      si môžeš zapísať do denníčka spolu s ich bodovým ohodnotením za minútu
+      vykonávania.
+    </p>
+    <p>
+      <b>Pridať aktivitu</b> - môžeš tu pridávať aktivity do svojho denníčka. Na
+      túto podstránku sa vieš dostať aj priamo z tvojho kondičného denníka.
+    </p>
+    <p>
+      <b>Graf</b> - porovnanie bodových hodnotení po týždňoch všetkých báb.
+    </p>
   {% endif %}
 
   <h3>A ak to nefunguje...</h3>
