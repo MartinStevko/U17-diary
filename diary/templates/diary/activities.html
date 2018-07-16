@@ -37,6 +37,11 @@
           {% endfor %}
         {% endif %}
         <tr>
+          <td colspan="2">
+            <a href="{% url 'admin:diary_activity_add' %}">+ Pridať aktivitu</a>
+          </td>
+        </tr>
+        <tr>
           <td colspan="2"><input type="submit" value="Uprav body za minútu"></td>
         </tr>
       {% else %}
@@ -46,6 +51,11 @@
             <td><input class="act2" value="{{ activity.ppm }}" type="number" disabled></td>
           </tr>
         {% endfor %}
+        <tr>
+          <td colspan="2">
+            <a href="{% url 'admin:diary_activity_add' %}">+ Pridať aktivitu</a>
+          </td>
+        </tr>
       {% endif %}
     </table>
   </form>
