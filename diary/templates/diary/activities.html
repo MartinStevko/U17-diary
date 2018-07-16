@@ -33,11 +33,12 @@
             <tr>
               <td class="act1">{{ activity.name }}: </td>
               <td><input class="act2" name="{{ activity.id }}" value="{{ activity.ppm }}" type="number" required></td>
+              <td><p>{{ activity.description }}</p></td>
             </tr>
           {% endfor %}
         {% endif %}
         <tr>
-          <td colspan="2">
+          <td colspan="3">
             <a href="{% url 'admin:diary_activity_add' %}">+ Pridať aktivitu</a>
           </td>
         </tr>
