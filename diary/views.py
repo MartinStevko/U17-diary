@@ -269,7 +269,7 @@ def profile(request):
 
         update_points(profile)
 
-        first_date = date(2018, 7, 5)
+        first_date = date(2018, 7, 16)
         delta = datetime.now().date() - first_date
         date_difference = delta.days
         data = []
@@ -673,7 +673,7 @@ def add_action(request):
 
             new_points = action.duration * activity.ppm
 
-            first_date = date(2018, 7, 5)
+            first_date = date(2018, 7, 16)
             delta = action.date.date() - first_date
             week_number = delta.days // 7 + 1
 
@@ -736,7 +736,7 @@ def week_rapair(weeks, week_number):
             ord_ = week_number + 1
         while previous_ordinal + 1 < ord_:
             Week.objects.create(
-                idAccount = week[0].idAccount,
+                idAccount = weeks[0].idAccount,
                 ordinal_number = previous_ordinal + 1,
                 points = 0
             )
@@ -769,7 +769,7 @@ def graph(request):
 
         template = 'diary/graph.html'
 
-        first_date = date(2018, 7, 5)
+        first_date = date(2018, 7, 16)
         delta = datetime.now().date() - first_date
         week_number = delta.days // 7 + 1
 
@@ -854,13 +854,15 @@ def staff_activities(request):
 
 @login_required
 @permission_required('user.is_staff', raise_exception=True)
-def add_activity(request):
-    pass
-
-@login_required
-@permission_required('user.is_staff', raise_exception=True)
 def all_diaries(request):
-    pass
+    template = 'diary/all_diaries.html'
+
+    profiles = Account.objects.filter(approved=True)
+    for profile in profiles:
+        update_points(profile)
+    profiles = Account.objects.filter(approved=True).order_by('idUser.username')
+
+    return render(request, template, {'profiles':profiles})
 
 @login_required
 @permission_required('user.is_staff', raise_exception=True)

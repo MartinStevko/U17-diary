@@ -24,7 +24,6 @@ urlpatterns = [
 
     ### Staff things ###
     path('activity/list', views.staff_activities, name='staff_activities'),
-    path('activity/add', views.add_activity, name='add_activity'),
     path('diary/list', views.all_diaries, name='all_diaries'),
     path('diary/user/<str:username>/action/<int:action_id>', views.not_my_action, name='not_my_action'),
     path('diary/user/<str:username>', views.not_my_diary, name='not_my_diary'),
