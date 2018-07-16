@@ -860,7 +860,7 @@ def all_diaries(request):
     profiles = Account.objects.filter(approved=True)
     for profile in profiles:
         update_points(profile)
-    profiles = Account.objects.filter(approved=True).order_by('idUser.username')
+    profiles = Account.objects.filter(approved=True).order_by('idUser__username')
 
     return render(request, template, {'profiles':profiles})
 

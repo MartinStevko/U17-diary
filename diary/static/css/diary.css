@@ -288,3 +288,12 @@ div.chat-mess {
 h4:not(#chat) {
   margin-top: 0;
 }
+
+#tableBox.all_diaries {
+  max-width: 800px;
+  margin: auto;
+}
+
+.action.all_diaries {
+  text-align: left;
+}

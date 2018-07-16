@@ -1,0 +1,33 @@
+{% extends 'diary/base.html' %}
+
+{% load staticfiles %}
+
+{% block title %}
+  <title>Denníček</title>
+{% endblock %}
+
+{% block bootstrap %}
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+{% endblock %}
+
+{% block css %}
+  <link rel="stylesheet" href="{% static 'css/diary.css' %}">
+{% endblock %}
+
+{% block content %}
+  <h1>Všetky denníčky</h1>
+  <div class="outside">
+    <div id="tableBox" class="all_diaries">
+      <div class="head row">
+        <div class="cell head left action"><span>Používateľské meno</span></div>
+        <div class="cell head points right">Body</div>
+      </div>
+      {% for profile in profiles %}
+        <a class="row" href="{% url 'diary:not_my_diary' profile.idUser.username %}">
+          <div class="cell left action all_diaries">{{ profile.idUser.username }}</div>
+          <div class="cell points right">{{ profile.points }}</div>
+        </a>
+      {% endfor %}
+    </div>
+  </div>
+{% endblock %}
