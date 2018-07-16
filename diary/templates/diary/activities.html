@@ -1,0 +1,52 @@
+{% extends 'diary/base.html' %}
+
+{% load staticfiles %}
+
+{% block title %}
+  <title>Zoznam aktivít</title>
+{% endblock %}
+
+{% block bootstrap %}
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+{% endblock %}
+
+{% block css %}
+  <link rel="stylesheet" href="{% static 'css/form.css' %}">
+{% endblock %}
+
+{% block content %}
+  <h1>Zoznam možných aktivít</h1>
+  {% if error %}
+    <div class="alert alert-danger alert-dismissible fade in">
+      <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+      <strong>Chyba!</strong> {{ error }}
+    </div>
+  {% endif %}
+  <form method="POST" class="form">
+    {% csrf_token %}
+    <table class="form">
+      {% if user.is_staff %}
+        {% if staff %}
+          {% for activity in activities %}
+            <tr>
+              <td class="act1">{{ activity.name }}: </td>
+              <td><input class="act2" name="{{ activity.id }}" value="{{ activity.ppm }}" type="number" required></td>
+            </tr>
+          {% endfor %}
+        {% endif %}
+        <tr>
+          <td colspan="2"><input type="submit" value="Uprav body za minútu"></td>
+        </tr>
+      {% else %}
+        {% for activity in activities %}
+          <tr>
+            <td class="act1">{{ activity.name }}: </td>
+            <td><input class="act2" value="{{ activity.ppm }}" type="number" disabled></td>
+          </tr>
+        {% endfor %}
+      {% endif %}
+    </table>
+  </form>
+{% endblock %}

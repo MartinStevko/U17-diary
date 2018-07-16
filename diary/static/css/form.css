@@ -113,3 +113,13 @@ tr {
   min-width: 800px;
 	height: 500px;
 }
+
+td.act1 {
+  font-weight: bold;
+  text-align: right;
+  padding: 10px;
+}
+
+input.act2 {
+  max-width: 80px;
+}

@@ -807,7 +807,7 @@ def graph(request):
         return redirect('diary:log_in')
 
 def activities(request):
-    template = 'diary/non_staff_activities.html'
+    template = 'diary/activities.html'
 
     activities_ = Activity.objects.all()
     return render(request, template, {'activities':activities_})
@@ -817,7 +817,8 @@ def activities(request):
 @login_required
 @permission_required('user.is_staff', raise_exception=True)
 def staff_activities(request):
-    template = 'diary/staff_activities.html'
+    staff = True
+    template = 'diary/activities.html'
 
     activities_ = Activity.objects.all()
 
@@ -826,7 +827,7 @@ def staff_activities(request):
         for activity in activities_:
             id_string = str(activity.id)
             try:
-                activity_value.append(int(request.POST[id_string])
+                activity_value.append(int(request.POST[id_string]))
             except(ValueError):
                 pass
 
@@ -844,11 +845,12 @@ def staff_activities(request):
             message_ = 'Údaje neboli zmenené. Jeden alebo viacero údajov chýba.'
             return render(request, template, {
                 'activities':activities_,
-                'error':message_
+                'error':message_,
+                'staff':staff
             })
 
     else:
-        return render(request, template, {'activities':activities_})
+        return render(request, template, {'activities':activities_, 'staff':staff})
 
 @login_required
 @permission_required('user.is_staff', raise_exception=True)
