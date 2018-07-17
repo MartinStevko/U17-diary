@@ -727,7 +727,7 @@ def add_action(request):
         request.session['back_redirection'] = 'add_action'
         return redirect('diary:log_in')
 
-def week_rapair(weeks, week_number):
+def add_missing_week(weeks, week_number):
     previous_ordinal = 0
     for i in range(week_number + 1):
         try:
@@ -746,6 +746,33 @@ def week_rapair(weeks, week_number):
             pass
         else:
             previous_ordinal += 1
+
+def week_repair(profile):
+    first_date = date(2018,7,16)
+
+    weeks = Week.objects.filter(idAccount=profile)
+    actions = Action.objects.filter(idAccount=profile)
+    for week in weeks:
+        obj = []
+        ord_ = week.ordinal_number - 1
+        d = ord_*7
+
+        start_ = first_date + timedelta(days=d)
+        end_ = first_date + timedelta(days=d+7)
+        start_ = datetime.combine(start_, datetime.min.time())
+        end_ = datetime.combine(end_, datetime.min.time())
+
+        for act in actions:
+            naive = act.date.replace(tzinfo=None)
+            if (naive > start_ and naive < end_):
+                obj.append(act)
+        total_sum = 0
+
+        for act in obj:
+            total_sum += act.duration * act.idActivity.ppm
+
+        week.points = total_sum
+        week.save()
 
 def graph(request):
     if request.user.is_authenticated:
@@ -778,7 +805,8 @@ def graph(request):
         for acc in accounts:
             players.append(acc.idUser.username)
             weeks = Week.objects.filter(idAccount=acc).order_by('ordinal_number')
-            week_rapair(weeks, week_number)
+            add_missing_week(weeks, week_number)
+            week_repair(acc)
 
         data = []
         for i in range(week_number + 1):
