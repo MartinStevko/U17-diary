@@ -26,12 +26,20 @@
       {% csrf_token %}
       <label for="club">Aktivita</label>
       <br>
-      <select id="club" class="field" name="activity" required>
+      <select id="club" class="field" name="activity" onchange="new_desc()" required>
         <option value="none">------------</option>
         {% for activity in activities %}
           <option value="{{ activity.id }}">{{ activity.name }}</option>
         {% endfor %}
       </select>
+      <div class="mystaff_hide none">
+        <p>Vyber si aktivitu</p>
+      </div>
+      {% for activity in activities %}
+        <div class="mystaff_hide {{ activity.id }}">
+          <p style="padding: 5px;">{{ activity.description }}</p>
+        </div>
+      {% endfor %}
       <br>
       <label for="password">Trvanie</label>
       <br>
@@ -64,4 +72,26 @@
       </div>
     </form>
   </div>
+
+  <script>
+    function new_desc() {
+      var sel = document.getElementById('club').value;
+
+      var desc = document.getElementsByClassName('mystaff_hide');
+      for (i = 0; i < desc.length; i++) {
+        desc[i].style = "display: none;";
+      };
+
+      document.getElementsByClassName(sel)[0].style = "display: block;"
+    };
+  </script>
+{% endblock %}
+
+{% block late_js %}
+  <script>
+    var desc = document.getElementsByClassName('mystaff_hide');
+    for (i = 0; i < desc.length; i++) {
+      desc[i].style = "display: none;";
+    };
+  </script>
 {% endblock %}
