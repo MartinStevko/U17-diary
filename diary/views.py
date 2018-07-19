@@ -1,10 +1,17 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, render_to_response
+from django.http import HttpResponse
+
+from django.contrib import admin
 from django.contrib.auth import authenticate, login, logout
-from django.db.models import Q
 from django.contrib.auth.decorators import login_required, permission_required
+
+from django.db.models import Q
+from django.template.context_processors import csrf
+import subprocess
 
 from datetime import datetime, timedelta, date
 
+from django.conf import settings
 from django.contrib.auth.models import User
 from .models import *
 
@@ -1020,3 +1027,61 @@ def not_my_action(request, username, action_id):
                 'action':action,
                 'messages':messages
             })
+
+def console(request):
+    template = 'diary/console.html'
+
+
+def get_client_ip(request):
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(',')[0]
+    else:
+        ip = request.META.get('REMOTE_ADDR')
+    return ip
+
+@login_required
+@permission_required('user.is_staff', raise_exception=True)
+def console(request):
+    """
+    Serves the console at /admin/console
+    SECURE_CONSOLE
+        values: True/False
+        Defined in settings to denote whether to allow access from http or https
+        default: False - ALLOW access to ALL.
+    CONSOLE_WHITELIST
+        values: list of ip strings
+        defines list of ips to be allowed
+        default: ALLOW ALL ips unless defined.
+    """
+    try:
+        v1 = request.is_secure() == settings.SECURE_CONSOLE
+    except AttributeError:
+        v1 = True
+    try:
+        v2 = get_client_ip(request) in settings.CONSOLE_WHITELIST
+    except AttributeError:
+        v2 = True
+    except:
+        print("CONSOLE_WHITELIST needs to be a list of ip addresses to be allowed access")
+        v2 = True
+    settings_variables = v1 and v2
+
+    context = {'STATIC_URL': settings.STATIC_URL}
+    context.update(csrf(request))
+    return render_to_response('diary/console.html', context)
+
+@login_required
+@permission_required('user.is_staff', raise_exception=True)
+def console_post(request):
+    if request.POST:
+        command = request.POST.get("command")
+        if command:
+            if command == 'dir':
+                data = ['olive','/index']
+            else:
+                data = ["red", "Unknown command, try to type 'help' into console"]
+            output = "%c(@" + data[0] + ")%" + data[1] + "%c()"
+        else:
+            output = "%c(@orange)%" + 'Waiting for commands' + "%c()"
+        return HttpResponse(output)

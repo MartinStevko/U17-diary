@@ -1,0 +1,62 @@
+{% load staticfiles %}
+
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="description" content="Webová platforma vyvýjaná pre slovenskú ženskú reprezentáciu v ultimate frisbee do 17 rokov za účelom vyhodnocovania kondičnej prípravy">
+    <meta name="author" content="Martin Števko">
+    <meta name="keywords" content="príprava, kondičná, U17, baby, repre">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <meta property="og:url" content="{{ request.META.HTTP_HOST }}" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Kondičný denníček" />
+    <meta property="og:description" content="Webová platforma vyvýjaná pre slovenskú ženskú reprezentáciu v ultimate frisbee do 17 rokov za účelom vyhodnocovania kondičnej prípravy" />
+    <meta property="og:image" content="{% static 'img/logo2.jpg' %}" />
+
+    <title>Terminál</title>
+    <link rel="icon" href="{% static 'img/diary.png' %}" type="image/png">
+
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <script type="text/javascript" src="{% static 'js/termlib.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/jquery.min.js' %}"></script>
+    <style>
+      .term {
+        font-family: courier, fixed, swiss, sans-serif;
+        font-size: 16px;
+        color: #D8D8D8;
+        background: none;
+      }
+
+      .termReverse {
+        color: #424242;
+        background: #33d011;
+      }
+
+      body {
+        background: #242424;
+        padding: 35px;
+        overflow-y: hidden;
+      }
+
+      .termDiv {
+        width: 100%;
+        height: 100%;
+      }
+
+      table {
+        width: 100%;
+        height: 100%;
+      }
+
+      form {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="termDiv" id="termDiv"></div>
+    <form>{% csrf_token %}</form>
+  </body>
+  <script type="text/javascript" src="{% static 'js/new_terminal.js' %}"></script>
+</html>
