@@ -13,7 +13,9 @@ from datetime import datetime, timedelta, date
 
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.contrib.sessions.models import Session
 from .models import *
+from .variables import directories, cmd_list
 
 ### Done ###
 def index(request):
@@ -1028,10 +1030,6 @@ def not_my_action(request, username, action_id):
                 'messages':messages
             })
 
-def console(request):
-    template = 'diary/console.html'
-
-
 def get_client_ip(request):
     x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
     if x_forwarded_for:
@@ -1043,8 +1041,7 @@ def get_client_ip(request):
 @login_required
 @permission_required('user.is_staff', raise_exception=True)
 def console(request):
-    """
-    Serves the console at /admin/console
+    """Serves the console at /admin/console
     SECURE_CONSOLE
         values: True/False
         Defined in settings to denote whether to allow access from http or https
@@ -1052,8 +1049,7 @@ def console(request):
     CONSOLE_WHITELIST
         values: list of ip strings
         defines list of ips to be allowed
-        default: ALLOW ALL ips unless defined.
-    """
+        default: ALLOW ALL ips unless defined."""
     try:
         v1 = request.is_secure() == settings.SECURE_CONSOLE
     except AttributeError:
@@ -1078,10 +1074,44 @@ def console_post(request):
         command = request.POST.get("command")
         if command:
             if command == 'dir':
-                data = ['olive','/index']
+                data = ['olive', directories]
+
+            elif command == 'active users':
+                n = User.objects.filter(is_active=True)
+                data = ['olive', str(n)]
+
+            elif command == 'repair profiles':
+                try:
+                    profiles = Account.objects.all()
+                    for profile in profiles:
+                        update_points(profile)
+                except:
+                    data = ['red', 'Unexpected error']
+                else:
+                    data = ['green', 'Profiles were successfully repaired']
+
+            elif command == 'repair weeks':
+                try:
+                    profiles = Account.objects.all()
+                    for profile in profiles:
+                        week_repair(profile)
+                except:
+                    data = ['red', 'Unexpected error']
+                else:
+                    data = ['green', 'Weeks were successfully repaired']
+
+            elif command == 'help':
+                data = ['olive', cmd_list]
+
+            elif command == 'exit':
+                request.session.flush()
+                data = ["green", "Session were successfully flushed"]
+
             else:
                 data = ["red", "Unknown command, try to type 'help' into console"]
+
             output = "%c(@" + data[0] + ")%" + data[1] + "%c()"
+
         else:
             output = "%c(@orange)%" + 'Waiting for commands' + "%c()"
         return HttpResponse(output)
