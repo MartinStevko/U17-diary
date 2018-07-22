@@ -1,3 +1,11 @@
+window.onkeyup = function(e) {
+    var key = e.keyCode ? e.keyCode : e.which;
+
+    if (key == 36) {
+        window.location.replace("http://repreu17.pythonanywhere.com/home");
+    };
+}
+
 term = new Terminal(
   {
     type: "POST",
