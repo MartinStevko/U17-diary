@@ -810,7 +810,8 @@ def graph(request):
         week_number = delta.days // 7 + 1
 
         players = []
-        accounts = Account.objects.filter(approved=True).order_by('pk')
+        accounts = Account.objects.filter(~Q(points=0), approved=True).order_by('pk')
+
         for acc in accounts:
             players.append(acc.idUser.username)
             weeks = Week.objects.filter(idAccount=acc).order_by('ordinal_number')
@@ -819,9 +820,14 @@ def graph(request):
 
         data = []
         for i in range(week_number + 1):
-            weeks = Week.objects.filter(ordinal_number=i).order_by('idAccount_id')
+            weeks_temp = Week.objects.filter(ordinal_number=i).order_by('idAccount_id')
+            weeks = []
+            for week in weeks_temp:
+                if week.idAccount.points != 0:
+                    weeks.append(week)
             week_data = []
             week_str = str(i) + '.'
+            total_points = 0
             for week in weeks:
                 name_ = str(week.idAccount.idUser.username)
 
@@ -831,9 +837,14 @@ def graph(request):
                     if w.ordinal_number < i:
                         previous_points += w.points
 
-                points_ = str(week.points + previous_points)
+                points_ = int(week.points + previous_points)
+                total_points += int(week.points + previous_points)
 
                 week_data.append([name_, points_])
+
+            points_mean = total_points // len(week_data)
+            for person in week_data:
+                person[1] = str(person[1] - points_mean)
             data.append([week_str, week_data])
 
         return render(request, template, {'players':players, 'data':data})
@@ -1105,7 +1116,7 @@ def console_post(request):
 
             elif command == 'exit':
                 request.session.flush()
-                data = ["green", "Session were successfully flushed"]
+                data = ["green", "Session was successfully flushed"]
 
             else:
                 data = ["red", "Unknown command, try to type 'help' into console"]
