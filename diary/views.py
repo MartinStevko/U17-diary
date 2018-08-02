@@ -1110,6 +1110,54 @@ def console_post(request):
                 else:
                     data = ['green', 'Weeks were successfully repaired']
 
+            elif command == 'results --five':
+                profiles = Account.objects.filter(approved=True)
+                for profile in profiles:
+                    update_points(profile)
+
+                relevant = Account.objects.filter(approved=True).order_by('-points')[:5]
+
+                result = 'Current results:\n'
+                i = 1
+                for profile in relevant:
+                    result += '   {}. {} - {}\n'.format(i, profile.idUser.username, profile.points)
+                    i += 1
+
+                data = ['olive', result]
+
+            elif command == 'results --ten':
+                profiles = Account.objects.filter(approved=True)
+                for profile in profiles:
+                    update_points(profile)
+
+                relevant = Account.objects.filter(approved=True).order_by('-points')[:10]
+
+                result = 'Current results:\n'
+                i = 1
+                for profile in relevant:
+                    result += '   {}. {} - {}\n'.format(i, profile.idUser.username, profile.points)
+                    i += 1
+
+                data = ['olive', result]
+
+            elif command == 'results --full':
+                profiles = Account.objects.filter(approved=True)
+                for profile in profiles:
+                    update_points(profile)
+
+                relevant = Account.objects.filter(approved=True).order_by('-points')
+
+                result = 'Current results:\n'
+                i = 1
+                for profile in relevant:
+                    result += '   {}. {} - {}\n'.format(i, profile.idUser.username, profile.points)
+                    i += 1
+
+                data = ['olive', result]
+
+            elif command == 'test':
+                data = ['olive', 'Hello world!']
+
             elif command == 'help':
                 data = ['olive', cmd_list]
 
