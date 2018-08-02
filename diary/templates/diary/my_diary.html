@@ -20,13 +20,16 @@
 
 {% block content %}
   {% if user.is_staff %}
-    <h1>Denníček - {{ diary_user.username }}</h1>
+    <h1>
+      Denníček - <a id="uprof" href="{% url 'diary:not_my_profile' diary_user.username %}">{{ diary_user.username }}</a>
+    </h1>
   {% else %}
     <h1>Denníček</h1>
   {% endif %}
   <div class="row_div">
     <p id="points">Body spolu: <strong id="num">{{ points }}</strong></p>
     {% if user.is_staff %}
+      <a id="add" href="{% url 'diary:all_diaries' %}">Späť na všetky</a>
     {% else %}
       <a id="add" href="{% url 'diary:add_action' %}"><strong>+</strong> Pridať aktivitu</a>
     {% endif %}

@@ -297,3 +297,11 @@ h4:not(#chat) {
 .action.all_diaries {
   text-align: left;
 }
+
+#uprof {
+  text-decoration: none;
+}
+
+#uprof:hover {
+  text-decoration: underline;
+}
