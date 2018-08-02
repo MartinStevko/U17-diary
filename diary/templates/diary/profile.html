@@ -3,7 +3,11 @@
 {% load staticfiles %}
 
 {% block title %}
-  <title>{{ user.username }}</title>
+  {% if user.is_staff %}
+    <title>Profil {{ profile_user.username }}</title>
+  {% else %}
+    <title>{{ user.username }}</title>
+  {% endif %}
 {% endblock %}
 
 {% block bootstrap %}
@@ -101,7 +105,11 @@
 
 {% block content %}
   <div id="prof_sphere" style="overflow: hidden; overflow-x: auto;">
-    <h1>Môj profil</h1>
+    {% if user.is_staff %}
+      <h1>Profil - {{ profile_user.username }}</h1>
+    {% else %}
+      <h1>Môj profil</h1>
+    {% endif %}
     <div class="row">
       <div class="info">
         <table class="profile">
@@ -111,11 +119,19 @@
           </tr>
           <tr>
             <td class="category">Používateľské meno:</td>
-            <td class="value">{{ user.username }}</td>
+            {% if user.is_staff %}
+              <td class="value">{{ profile_user.username }}</td>
+            {% else %}
+              <td class="value">{{ user.username }}</td>
+            {% endif %}
           </tr>
           <tr>
             <td class="category">E-mail:</td>
-            <td class="value">{{ user.email }}</td>
+            {% if user.is_staff %}
+              <td class="value">{{ profile_user.email }}</td>
+            {% else %}
+              <td class="value">{{ user.email }}</td>
+            {% endif %}
           </tr>
         </table>
       </div>
@@ -130,7 +146,13 @@
             <td class="value">{{ profile.club.name }}</td>
           </tr>
           <tr>
-            <td colspan="2"><a id="change" href="{% url 'diary:change_profile' %}">Zmeň profil</a></td>
+            <td colspan="2">
+              {% if user.is_staff %}
+                <a id="change" href="{% url 'diary:not_my_diary' profile_user.username %}">Späť na denníček</a>
+              {% else %}
+                <a id="change" href="{% url 'diary:change_profile' %}">Zmeň profil</a>
+              {% endif %}
+            </td>
           </tr>
         </table>
       </div>

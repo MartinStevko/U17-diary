@@ -816,7 +816,6 @@ def graph(request):
             players.append(acc.idUser.username)
             weeks = Week.objects.filter(idAccount=acc).order_by('ordinal_number')
             add_missing_week(weeks, week_number)
-            week_repair(acc)
 
         data = []
         for i in range(week_number + 1):
@@ -1126,3 +1125,56 @@ def console_post(request):
         else:
             output = "%c(@orange)%" + 'Waiting for commands' + "%c()"
         return HttpResponse(output)
+
+@login_required
+@permission_required('user.is_staff', raise_exception=True)
+def not_my_profile(request, username):
+    template = 'diary/profile.html'
+
+    try:
+        profile_user = User.objects.get(username=username)
+    except:
+        request.session['message'] = ['warn','Chyba! Užívateľ nebol nájdený.']
+        return redirect('diary:home')
+
+    try:
+        profile = Account.objects.get(idUser=profile_user)
+    except(Account.DoesNotExist):
+        request.session['message'] = ['warn','Profil pre tento účet neexistuje. Ak máš dojem, že by mal, kontaktuj admina.']
+        return redirect('diary:home')
+    except(Account.MultipleObjectsReturned):
+        message = 'Pre tento účet ({}) existuje viacero profilov. Kontaktuj admina stránky so žiadosťou o vyriešenie problému.'
+        DuplicateError.objects.create(idUser=request.user, error_message=message)
+        request.session['message'] = ['error', message]
+        return redirect('diary:home')
+
+    update_points(profile)
+
+    first_date = date(2018, 7, 16)
+    delta = datetime.now().date() - first_date
+    date_difference = delta.days
+    data = []
+
+    for i in range(date_difference+1):
+        date_now = first_date + timedelta(days=i)
+
+        p = 0
+        actions = Action.objects.filter(idAccount=profile)
+        for act in actions:
+            r = act.date.date() - date_now
+            if r.days == 0:
+                p += act.duration * act.idActivity.ppm
+        data.append([i, p])
+
+    if profile.approved == True:
+        state = 'Schválený'
+    else:
+        state = 'Čakajúci na schválenie'
+
+    return render(request, template, {
+        'profile':profile,
+        'state':state,
+        'date_difference':date_difference,
+        'data':data,
+        'profile_user':profile_user
+    })
