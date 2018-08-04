@@ -4,6 +4,7 @@ from django.http import HttpResponse
 from django.contrib import admin
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.admin.views.decorators import staff_member_required
 
 from django.db.models import Q
 from django.template.context_processors import csrf
@@ -862,7 +863,7 @@ def activities(request):
 
 ### Not done ###
 @login_required
-@permission_required('user.is_staff', raise_exception=True)
+@staff_member_required
 def staff_activities(request):
     staff = True
     template = 'diary/activities.html'
@@ -900,7 +901,7 @@ def staff_activities(request):
         return render(request, template, {'activities':activities_, 'staff':staff})
 
 @login_required
-@permission_required('user.is_staff', raise_exception=True)
+@staff_member_required
 def all_diaries(request):
     template = 'diary/all_diaries.html'
 
@@ -912,7 +913,7 @@ def all_diaries(request):
     return render(request, template, {'profiles':profiles})
 
 @login_required
-@permission_required('user.is_staff', raise_exception=True)
+@staff_member_required
 def not_my_diary(request, username):
     template = 'diary/my_diary.html'
 
@@ -970,7 +971,7 @@ def not_my_diary(request, username):
     })
 
 @login_required
-@permission_required('user.is_staff', raise_exception=True)
+@staff_member_required
 def not_my_action(request, username, action_id):
     template = 'diary/view_action.html'
 
@@ -1049,7 +1050,7 @@ def get_client_ip(request):
     return ip
 
 @login_required
-@permission_required('user.is_staff', raise_exception=True)
+@staff_member_required
 def console(request):
     """Serves the console at /admin/console
     SECURE_CONSOLE
@@ -1078,7 +1079,7 @@ def console(request):
     return render_to_response('diary/console.html', context)
 
 @login_required
-@permission_required('user.is_staff', raise_exception=True)
+@staff_member_required
 def console_post(request):
     if request.POST:
         command = request.POST.get("command")
@@ -1175,7 +1176,7 @@ def console_post(request):
         return HttpResponse(output)
 
 @login_required
-@permission_required('user.is_staff', raise_exception=True)
+@staff_member_required
 def not_my_profile(request, username):
     template = 'diary/profile.html'
 
