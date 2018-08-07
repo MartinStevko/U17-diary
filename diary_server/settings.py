@@ -10,7 +10,7 @@ SECRET_KEY = 'xb!b8qngljfdo%iy(^a9$kw7fbt=_3edf#33%ihe#-4y83q01p'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ADMINS = [('Martin', 'mstevko10@gmail.com')]
+ADMINS = [('MartinStevko', 'mstevko10@gmail.com')]
 
 ALLOWED_HOSTS = ['*']
 
