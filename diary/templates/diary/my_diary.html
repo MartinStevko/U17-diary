@@ -29,9 +29,9 @@
   <div class="row_div">
     <p id="points">Body spolu: <strong id="num">{{ points }}</strong></p>
     {% if user.is_staff %}
-      <a id="add" href="{% url 'diary:all_diaries' %}">Späť na všetky</a>
+      <a id="add" href="{% url 'diary:all_diaries' %}"><i class="fa fa-arrow-left"></i> Späť na všetky</a>
     {% else %}
-      <a id="add" href="{% url 'diary:add_action' %}"><strong>+</strong> Pridať aktivitu</a>
+      <a id="add" href="{% url 'diary:add_action' %}"><strong><i class="fa fa-plus"></i></strong> Pridať aktivitu</a>
     {% endif %}
   </div>
   <div class="outside">

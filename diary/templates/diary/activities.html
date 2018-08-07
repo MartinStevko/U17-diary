@@ -52,11 +52,6 @@
             <td><input class="act2" value="{{ activity.ppm }}" type="number" disabled></td>
           </tr>
         {% endfor %}
-        <tr>
-          <td colspan="2">
-            <a href="{% url 'admin:diary_activity_add' %}">+ Pridať aktivitu</a>
-          </td>
-        </tr>
       {% endif %}
     </table>
   </form>

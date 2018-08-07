@@ -19,6 +19,7 @@
     <link rel="icon" href="{% static 'img/diary.png' %}" type="image/png">
 
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     {% block bootstrap %}
     {% endblock %}
     <link rel="stylesheet" href="{% static 'css/base.css' %}">
@@ -30,20 +31,21 @@
     <!-- Sidebar -->
     <div class="w3-sidebar w3-bar-block w3-animate-left" style="display:none;z-index:5" id="mySidebar">
       <button class="w3-bar-item w3-button w3-large" onclick="w3_close()">Zavrieť &times;</button>
-      <a href="{% url 'diary:home' %}" class="w3-bar-item w3-button">Domov</a>
       {% if user.is_staff %}
-        <a href="{% url 'admin:index' %}" class="w3-bar-item w3-button">Admin</a>
-        <a href="{% url 'diary:console' %}" class="w3-bar-item w3-button">Terminál</a>
-        <a href="{% url 'diary:staff_activities' %}" class="w3-bar-item w3-button">Aktivity</a>
-        <a href="{% url 'diary:all_diaries' %}" class="w3-bar-item w3-button">Denníčky</a>
+        <a href="{% url 'diary:home' %}" class="w3-bar-item w3-button"><i class="fa fa-home" style="font-size:24px"></i>&emsp;Domov</a>
+        <a href="{% url 'admin:index' %}" class="w3-bar-item w3-button"><i class="fa fa-pencil" style="font-size:24px"></i>&emsp;Admin</a>
+        <a href="{% url 'diary:console' %}" class="w3-bar-item w3-button"><i class="fa fa-code" style="font-size:24px"></i>&ensp;Terminál</a>
+        <a href="{% url 'diary:staff_activities' %}" class="w3-bar-item w3-button"><i class="fa fa-list-alt" style="font-size:24px"></i>&emsp;Aktivity</a>
+        <a href="{% url 'diary:all_diaries' %}" class="w3-bar-item w3-button"><i class="fa fa-calendar" style="font-size:24px"></i>&emsp;Denníčky</a>
       {% else %}
-        <a href="{% url 'diary:profile' %}" class="w3-bar-item w3-button">Môj profil</a>
-        <a href="{% url 'diary:my_diary' %}" class="w3-bar-item w3-button">Môj denník</a>
-        <a href="{% url 'diary:activities' %}" class="w3-bar-item w3-button">Zoznam aktivít</a>
-        <a href="{% url 'diary:add_action' %}" class="w3-bar-item w3-button">Pridať aktivitu</a>
+        <a href="{% url 'diary:home' %}" class="w3-bar-item w3-button"><i class="fa fa-home" style="font-size:24px"></i>&ensp;Domov</a>
+        <a href="{% url 'diary:profile' %}" class="w3-bar-item w3-button"><i class="fa fa-user" style="font-size:24px"></i>&emsp;Môj profil</a>
+        <a href="{% url 'diary:my_diary' %}" class="w3-bar-item w3-button"><i class="fa fa-calendar" style="font-size:24px"></i>&ensp;Môj denník</a>
+        <a href="{% url 'diary:activities' %}" class="w3-bar-item w3-button"><i class="fa fa-list-alt" style="font-size:24px"></i>&ensp;Zoznam aktivít</a>
+        <a href="{% url 'diary:add_action' %}" class="w3-bar-item w3-button"><i class="fa fa-calendar-plus-o" style="font-size:24px"></i>&ensp;Pridať aktivitu</a>
       {% endif %}
-      <a href="{% url 'diary:graph' %}" class="w3-bar-item w3-button">Graf</a>
-      <a href="{% url 'diary:log_out' %}" class="w3-bar-item w3-button">Odhlásiť sa</a>
+      <a href="{% url 'diary:graph' %}" class="w3-bar-item w3-button"><i class="fa fa-bar-chart" style="font-size:24px"></i>&ensp;Graf</a>
+      <a href="{% url 'diary:log_out' %}" class="w3-bar-item w3-button"><i class="fa fa-sign-out" style="font-size:24px"></i>&emsp;Odhlásiť sa</a>
     </div>
 
     <div class="w3-overlay w3-animate-opacity" onclick="w3_close()" style="cursor:pointer" id="myOverlay"></div>
@@ -56,7 +58,7 @@
           Vitaj <a href="{% url 'diary:profile' %}">{{ user.username }}</a>!
         </span>
         <span style="float: right;">
-          <a href="{% url 'diary:log_out' %}">Odhlásiť sa</a>
+          <a href="{% url 'diary:log_out' %}"><i class="fa fa-sign-out" style="font-size:24px"></i>&ensp;Odhlásiť sa</a>
         </span>
       {% else %}
         <span style="float: right;">
