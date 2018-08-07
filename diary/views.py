@@ -11,6 +11,8 @@ from django.template.context_processors import csrf
 import subprocess
 
 from datetime import datetime, timedelta, date
+import random
+import string
 
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -341,6 +343,7 @@ def change_profile(request):
             new_username = request.POST['username']
             new_email = request.POST['email']
             new_club_id = int(request.POST['club'])
+            approval_code = request.POST['code']
 
             if profile.club.id != new_club_id:
                 try:
@@ -440,6 +443,17 @@ def change_profile(request):
                         'clubs':clubs,
                         'error':message
                     })
+
+            if approval_code != '':
+                try:
+                    code = Code.objects.get(value=approval_code)
+                except:
+                    pass
+                else:
+                    profile.approved = True
+                    profile.save()
+
+                    code.delete()
 
             return redirect('diary:profile')
 
@@ -1155,6 +1169,20 @@ def console_post(request):
                     i += 1
 
                 data = ['olive', result]
+
+            elif command == 'generate code':
+                code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=15))
+                approval = Code.objects.create(value=code)
+                approval.save()
+
+                data = ['olive', code]
+
+            elif command == 'active codes':
+                data = ['olive', 'Active approval codes:\n']
+
+                approvals = Code.objects.all()
+                for code in approvals:
+                    data[1] += '  {} (creation - {})'.format(str(code.value), str(code.time))
 
             elif command == 'test':
                 data = ['olive', 'Hello world!']
