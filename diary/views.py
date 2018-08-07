@@ -1184,6 +1184,16 @@ def console_post(request):
                 for code in approvals:
                     data[1] += '  {} (creation - {})'.format(str(code.value), str(code.time))
 
+            elif command == 'error list':
+                data = ['olive', 'Errors:\n']
+
+                errors = DuplicateError.objects.filter(solved=False).order_by('-time')
+                if errors:
+                    for error in errors:
+                        data[1] += '  - {} - {}: {})'.format(str(error.time), str(error.idUser.username), error.error_message)
+                else:
+                    data = ['green', 'No errors, good job!']
+
             elif command == 'test':
                 data = ['olive', 'Hello world!']
 
