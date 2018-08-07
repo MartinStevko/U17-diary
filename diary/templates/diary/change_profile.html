@@ -32,6 +32,13 @@
           <td class="category">Stav účtu:</td>
           <td class="value"><span>{{ state }}</span></td>
         </tr>
+        {% if profile.approved %}
+        {% else %}
+          <tr>
+            <td class="category">Aktivačný kód:</td>
+            <td class="value"><input class="field" name="code" type="text"></td>
+          </tr>
+        {% endif %}
         <tr>
           <td class="category">Používateľské meno:</td>
           <td class="value"><input class="field" name="username" value="{{ user.username }}" type="text" required></td>

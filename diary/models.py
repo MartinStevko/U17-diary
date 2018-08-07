@@ -68,6 +68,13 @@ class Message(models.Model):
     def __str__(self):
         return "{} - {}".format(self.from_user.username, self.time)
 
+class Code(models.Model):
+    value = models.CharField(max_length=20)
+    time = models.DateTimeField(default=timezone.now)
+
+    def __str__(self):
+        return "{}".format(self.value)
+
 class DuplicateError(models.Model):
     time = models.DateTimeField(default=timezone.now)
 

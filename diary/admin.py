@@ -6,6 +6,7 @@ from .models import *
 
 admin.site.register(Account)
 admin.site.register(Club)
+admin.site.register(Code)
 
 admin.site.register(Action)
 admin.site.register(Week)
