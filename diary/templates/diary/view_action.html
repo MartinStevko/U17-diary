@@ -19,10 +19,17 @@
 
 {% block content %}
   <div class="row_div">
-    <a id="add" href="{% url 'diary:not_my_diary' diary_username %}">
-      <i class="fa fa-arrow-left"></i>
-      Späť na denník
-    </a>
+    {% if user.is_staff %}
+      <a id="add" href="{% url 'diary:not_my_diary' diary_username %}">
+        <i class="fa fa-arrow-left"></i>
+        Späť na denník
+      </a>
+    {% else %}
+      <a id="add" href="{% url 'diary:my_diary' %}">
+        <i class="fa fa-arrow-left"></i>
+        Späť na denník
+      </a>
+    {% endif %}
   </div>
   <div class="act-box">
     <div class="act-head">
