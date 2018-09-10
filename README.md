@@ -61,7 +61,7 @@ iptables -I INPUT -p tcp -m tcp --dport PORT_NUMBER -j ACCEPT
 Make and then apply migrations. You can do it by typing:
 
 ```
-manage.py makemigrations pokemoni
+manage.py makemigrations diary
 ```
 ```
 manage.py migrate
