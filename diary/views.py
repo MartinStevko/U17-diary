@@ -1116,9 +1116,14 @@ def console_post(request):
                     data = ['green', 'Profiles were successfully repaired']
 
             elif command == 'repair weeks':
+                first_date = date(2018, 7, 16)
+                delta = datetime.now().date() - first_date
+                week_number = delta.days // 7 + 1
                 try:
                     profiles = Account.objects.all()
                     for profile in profiles:
+                        weeks = Week.objects.filter(idAccount=profile).order_by('ordinal_number')
+                        add_missing_week(weeks, week_number)
                         week_repair(profile)
                 except:
                     data = ['red', 'Unexpected error']
