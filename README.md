@@ -49,7 +49,7 @@ In Terminal:
 
 Create virtual enviroment
 ```cmd
-virtualenv ENV_NAME
+virtualenv -p python3 ENV_NAME
 ```
 and allow remote acces for desired port:
 ```bash
