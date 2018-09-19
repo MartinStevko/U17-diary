@@ -75,6 +75,20 @@ class Code(models.Model):
     def __str__(self):
         return "{}".format(self.value)
 
+class EvaulationChanges(models.Model):
+    time = models.DateTimeField(default=timezone.now)
+
+    def __str__(self):
+        return "{}".format(self.time)
+
+class OldPoints(models.Model):
+    account = models.ForeignKey(Account, on_delete=models.CASCADE)
+    time = models.ForeignKey(EvaulationChanges, on_delete=models.PROTECT)
+    value = models.PositiveIntegerField()
+
+    def __str__(self):
+        return "{} - {}".format(self.time.time, self.account.idUser.username)
+
 class DuplicateError(models.Model):
     time = models.DateTimeField(default=timezone.now)
 
