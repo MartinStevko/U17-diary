@@ -1092,6 +1092,26 @@ def console(request):
     context.update(csrf(request))
     return render_to_response('diary/console.html', context)
 
+def generate_results(number):
+    profiles = Account.objects.filter(approved=True)
+    for profile in profiles:
+        update_points(profile)
+
+    try:
+        number = int(number)
+    except(ValueError):
+        relevant = Account.objects.filter(approved=True).order_by('-points')
+    else:
+        relevant = Account.objects.filter(approved=True).order_by('-points')[:number]
+
+    result = 'Current results:\n'
+    i = 1
+    for profile in relevant:
+        result += '   {}. {} - {}\n'.format(i, profile.idUser.username, profile.points)
+        i += 1
+
+    return result
+
 @login_required
 @staff_member_required
 def console_post(request):
@@ -1131,48 +1151,15 @@ def console_post(request):
                     data = ['green', 'Weeks were successfully repaired']
 
             elif command == 'results --five':
-                profiles = Account.objects.filter(approved=True)
-                for profile in profiles:
-                    update_points(profile)
-
-                relevant = Account.objects.filter(approved=True).order_by('-points')[:5]
-
-                result = 'Current results:\n'
-                i = 1
-                for profile in relevant:
-                    result += '   {}. {} - {}\n'.format(i, profile.idUser.username, profile.points)
-                    i += 1
-
+                result = generate_results(5)
                 data = ['olive', result]
 
             elif command == 'results --ten':
-                profiles = Account.objects.filter(approved=True)
-                for profile in profiles:
-                    update_points(profile)
-
-                relevant = Account.objects.filter(approved=True).order_by('-points')[:10]
-
-                result = 'Current results:\n'
-                i = 1
-                for profile in relevant:
-                    result += '   {}. {} - {}\n'.format(i, profile.idUser.username, profile.points)
-                    i += 1
-
+                result = generate_results(10)
                 data = ['olive', result]
 
             elif command == 'results --full':
-                profiles = Account.objects.filter(approved=True)
-                for profile in profiles:
-                    update_points(profile)
-
-                relevant = Account.objects.filter(approved=True).order_by('-points')
-
-                result = 'Current results:\n'
-                i = 1
-                for profile in relevant:
-                    result += '   {}. {} - {}\n'.format(i, profile.idUser.username, profile.points)
-                    i += 1
-
+                result = generate_results('full')
                 data = ['olive', result]
 
             elif command == 'generate code':
