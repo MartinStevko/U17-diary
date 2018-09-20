@@ -1111,11 +1111,11 @@ def generate_results(number):
         points_old = OldPoints.objects.filter(account=profile).order_by('pk').last()
 
         try:
-            points_last = profile.points - points_old.value
-            result += '   {}. {} - {}\n'.format(i, profile.idUser.username, points_last)
-
             if profile.points > 0:
                 OldPoints.objects.create(account=profile, time=time_, value=profile.points)
+
+            points_last = profile.points - points_old.value
+            result += '   {}. {} - {}\n'.format(i, profile.idUser.username, points_last)
         except(AttributeError):
             result += '   {}. {} - {}\n'.format(i, profile.idUser.username, profile.points)
 
