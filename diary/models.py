@@ -78,6 +78,9 @@ class Code(models.Model):
 class EvaulationChanges(models.Model):
     time = models.DateTimeField(default=timezone.now)
 
+    class Meta:
+        verbose_name_plural = "Evaluation changes"
+
     def __str__(self):
         return "{}".format(self.time)
 
@@ -85,6 +88,9 @@ class OldPoints(models.Model):
     account = models.ForeignKey(Account, on_delete=models.CASCADE)
     time = models.ForeignKey(EvaulationChanges, on_delete=models.PROTECT)
     value = models.PositiveIntegerField()
+
+    class Meta:
+        verbose_name_plural = "Old points"
 
     def __str__(self):
         return "{} - {}".format(self.time.time, self.account.idUser.username)
