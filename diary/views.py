@@ -1112,10 +1112,10 @@ def generate_results(number, all):
         points_old = OldPoints.objects.filter(account=profile).order_by('pk').last()
 
         try:
-            if profile.points > 0:
-                OldPoints.objects.create(account=profile, time=time_, value=profile.points)
-
             if all:
+                if profile.points > 0:
+                    OldPoints.objects.create(account=profile, time=time_, value=profile.points)
+
                 points_last = profile.points - points_old.value
             else:
                 points_last = profile.points
