@@ -86,7 +86,7 @@ class EvaulationChanges(models.Model):
 
 class OldPoints(models.Model):
     account = models.ForeignKey(Account, on_delete=models.CASCADE)
-    time = models.ForeignKey(EvaulationChanges, on_delete=models.PROTECT)
+    time = models.ForeignKey(EvaulationChanges, on_delete=models.CASCADE)
     value = models.PositiveIntegerField()
 
     class Meta:

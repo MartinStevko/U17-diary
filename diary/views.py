@@ -1092,7 +1092,7 @@ def console(request):
     context.update(csrf(request))
     return render_to_response('diary/console.html', context)
 
-def generate_results(number):
+def generate_results(number, all):
     time_ = EvaulationChanges.objects.create()
     profiles = Account.objects.filter(approved=True)
     for profile in profiles:
@@ -1114,7 +1114,11 @@ def generate_results(number):
             if profile.points > 0:
                 OldPoints.objects.create(account=profile, time=time_, value=profile.points)
 
-            points_last = profile.points - points_old.value
+            if all:
+                points_last = profile.points - points_old.value
+            else:
+                points_last = profile.points
+
             result += '   {}. {} - {}\n'.format(i, profile.idUser.username, points_last)
         except(AttributeError):
             result += '   {}. {} - {}\n'.format(i, profile.idUser.username, profile.points)
@@ -1161,15 +1165,19 @@ def console_post(request):
                     data = ['green', 'Weeks were successfully repaired']
 
             elif command == 'results --five':
-                result = generate_results(5)
+                result = generate_results(5, True)
                 data = ['olive', result]
 
             elif command == 'results --ten':
-                result = generate_results(10)
+                result = generate_results(10, True)
                 data = ['olive', result]
 
             elif command == 'results --full':
-                result = generate_results('full')
+                result = generate_results('full', True)
+                data = ['olive', result]
+
+            elif command == 'results --complete':
+                result = generate_results('full', False)
                 data = ['olive', result]
 
             elif command == 'generate code':
