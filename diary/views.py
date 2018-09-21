@@ -1128,9 +1128,11 @@ def generate_results(number, all):
 
     results_field.sort(key=lambda x: x[1])
 
-    result = 'Current results:\n'
+    result = ''
     for profile in results_field:
-        result += profile[0]
+        result = profile[0] + result
+
+    result = 'Current results:\n' + result
     return result
 
 @login_required
@@ -1172,19 +1174,19 @@ def console_post(request):
                     data = ['green', 'Weeks were successfully repaired']
 
             elif command == 'results --five':
-                result = generate_results(5, True)
+                result = generate_results(5, False)
                 data = ['olive', result]
 
             elif command == 'results --ten':
-                result = generate_results(10, True)
+                result = generate_results(10, False)
                 data = ['olive', result]
 
             elif command == 'results --full':
-                result = generate_results('full', True)
+                result = generate_results('full', False)
                 data = ['olive', result]
 
-            elif command == 'results --complete':
-                result = generate_results('full', False)
+            elif command == 'results --last':
+                result = generate_results('full', True)
                 data = ['olive', result]
 
             elif command == 'generate code':
