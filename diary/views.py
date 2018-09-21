@@ -1093,7 +1093,8 @@ def console(request):
     return render_to_response('diary/console.html', context)
 
 def generate_results(number, all):
-    time_ = EvaulationChanges.objects.create()
+    if all:
+        time_ = EvaulationChanges.objects.create()
     profiles = Account.objects.filter(approved=True)
     for profile in profiles:
         update_points(profile)
@@ -1105,8 +1106,8 @@ def generate_results(number, all):
     else:
         relevant = Account.objects.filter(approved=True).order_by('-points')[:number]
 
-    result = 'Current results:\n'
     i = 1
+    results_field = []
     for profile in relevant:
         points_old = OldPoints.objects.filter(account=profile).order_by('pk').last()
 
@@ -1119,11 +1120,17 @@ def generate_results(number, all):
             else:
                 points_last = profile.points
 
-            result += '   {}. {} - {}\n'.format(i, profile.idUser.username, points_last)
+            results_field.append(['   {}. {} - {}\n'.format(i, profile.idUser.username, points_last), points_last])
         except(AttributeError):
-            result += '   {}. {} - {}\n'.format(i, profile.idUser.username, profile.points)
+            results_field.append(['   {}. {} - {}\n'.format(i, profile.idUser.username, profile.points), profile.points])
 
         i += 1
+
+    results_field.sort(key=lambda x: x[1])
+
+    result = 'Current results:\n'
+    for profile in results_field:
+        result += profile[0]
     return result
 
 @login_required
