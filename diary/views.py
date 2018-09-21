@@ -1106,7 +1106,6 @@ def generate_results(number, all):
     else:
         relevant = Account.objects.filter(approved=True).order_by('-points')[:number]
 
-    i = 1
     results_field = []
     for profile in relevant:
         points_old = OldPoints.objects.filter(account=profile).order_by('pk').last()
@@ -1120,17 +1119,19 @@ def generate_results(number, all):
             else:
                 points_last = profile.points
 
-            results_field.append(['   {}. {} - {}\n'.format(i, profile.idUser.username, points_last), points_last])
+            results_field.append(['{} - {}\n'.format(profile.idUser.username, points_last), points_last])
         except(AttributeError):
-            results_field.append(['   {}. {} - {}\n'.format(i, profile.idUser.username, profile.points), profile.points])
+            results_field.append(['{} - {}\n'.format(profile.idUser.username, profile.points), profile.points])
 
         i += 1
 
     results_field.sort(key=lambda x: x[1])
 
     result = ''
+    i = len(results_field)
     for profile in results_field:
-        result = profile[0] + result
+        result = '   {}. '.format(i) + profile[0] + result
+        i += -1
 
     result = 'Current results:\n' + result
     return result
