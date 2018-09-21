@@ -1123,8 +1123,6 @@ def generate_results(number, all):
         except(AttributeError):
             results_field.append(['{} - {}\n'.format(profile.idUser.username, profile.points), profile.points])
 
-        i += 1
-
     results_field.sort(key=lambda x: x[1])
 
     result = ''
