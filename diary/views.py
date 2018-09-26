@@ -1200,7 +1200,7 @@ def console_post(request):
 
                 approvals = Code.objects.all()
                 for code in approvals:
-                    data[1] += '  {} (creation - {})'.format(str(code.value), str(code.time))
+                    data[1] += '  {} (creation - {}\n)'.format(str(code.value), str(code.time))
 
             elif command == 'error list':
                 data = ['olive', 'Errors:\n']
