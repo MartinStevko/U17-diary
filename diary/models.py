@@ -151,6 +151,7 @@ class ItemResult(models.Model):
 class ChallangeResult(models.Model):
     account = models.ForeignKey(Account, on_delete=models.CASCADE)
     challange = models.ForeignKey(DailyChallange, on_delete=models.PROTECT)
+    time = models.DateTimeField(default=timezone.now)
 
     class Meta:
         verbose_name_plural = "Challange results"

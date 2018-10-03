@@ -35,14 +35,14 @@
         <a href="{% url 'diary:home' %}" class="w3-bar-item w3-button"><i class="fa fa-home" style="font-size:24px"></i>&emsp;Domov</a>
         <a href="{% url 'admin:index' %}" class="w3-bar-item w3-button"><i class="fa fa-pencil" style="font-size:24px"></i>&emsp;Admin</a>
         <a href="{% url 'diary:console' %}" class="w3-bar-item w3-button"><i class="fa fa-code" style="font-size:24px"></i>&ensp;Terminál</a>
-        <a href="{% url 'diary:all_challanges' %}" class="w3-bar-item w3-button"><i class="fa fa-bolt" style="font-size:24px"></i>&emsp;Denné výzvy</a>
-        <a href="{% url 'admin:diary' %}" class="w3-bar-item w3-button"><i class="fa fa-gear" style="font-size:24px"></i>&emsp;Správa výziev</a>
+        <a href="{% url 'diary:all_challanges' %}" class="w3-bar-item w3-button"><i class="fa fa-bolt" style="font-size:24px"></i>&emsp;&ensp;Denné výzvy</a>
+        <a href="{% url 'admin:app_list' 'diary' %}" class="w3-bar-item w3-button"><i class="fa fa-gear" style="font-size:24px"></i>&emsp;Správa výziev</a>
         <a href="{% url 'diary:staff_activities' %}" class="w3-bar-item w3-button"><i class="fa fa-list-alt" style="font-size:24px"></i>&emsp;Aktivity</a>
         <a href="{% url 'diary:all_diaries' %}" class="w3-bar-item w3-button"><i class="fa fa-calendar" style="font-size:24px"></i>&emsp;Denníčky</a>
       {% else %}
         <a href="{% url 'diary:home' %}" class="w3-bar-item w3-button"><i class="fa fa-home" style="font-size:24px"></i>&ensp;Domov</a>
         <a href="{% url 'diary:profile' %}" class="w3-bar-item w3-button"><i class="fa fa-user" style="font-size:24px"></i>&emsp;Môj profil</a>
-        <a href="{% url 'diary:challange' %}" class="w3-bar-item w3-button"><i class="fa fa-bolt" style="font-size:24px"></i>&emsp;Denná výzva</a>
+        <a href="{% url 'diary:challange' %}" class="w3-bar-item w3-button"><i class="fa fa-bolt" style="font-size:24px"></i>&ensp;&ensp;Denná výzva</a>
         <a href="{% url 'diary:my_diary' %}" class="w3-bar-item w3-button"><i class="fa fa-calendar" style="font-size:24px"></i>&ensp;Môj denník</a>
         <a href="{% url 'diary:activities' %}" class="w3-bar-item w3-button"><i class="fa fa-list-alt" style="font-size:24px"></i>&ensp;Zoznam aktivít</a>
         <a href="{% url 'diary:add_action' %}" class="w3-bar-item w3-button"><i class="fa fa-calendar-plus-o" style="font-size:24px"></i>&ensp;Pridať aktivitu</a>
