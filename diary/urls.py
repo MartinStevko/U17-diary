@@ -31,7 +31,6 @@ urlpatterns = [
     path('profile/<str:username>', views.not_my_profile, name='not_my_profile'),
     path('console', views.console, name='console'),
     path('console/post', views.console_post, name='console_post'),
-    path('challange/management', views.manage_challange, name='manage_challange'),
     path('challange/list', views.all_challanges, name='all_challanges'),
     ####################
 

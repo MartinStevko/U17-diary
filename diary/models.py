@@ -126,7 +126,7 @@ class DailyChallange(models.Model):
 
 
 class ChallangeItem(models.Model):
-    challange = models.ForeignKey(Challange, on_delete=models.CASCADE)
+    challange = models.ForeignKey(DailyChallange, on_delete=models.CASCADE)
 
     action = models.CharField(max_length=500)
 
