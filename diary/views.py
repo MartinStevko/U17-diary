@@ -20,7 +20,6 @@ from django.contrib.sessions.models import Session
 from .models import *
 from .variables import directories, cmd_list
 
-### Done ###
 def index(request):
     template = 'diary/index.html'
 
@@ -873,9 +872,8 @@ def activities(request):
 
     activities_ = Activity.objects.all()
     return render(request, template, {'activities':activities_})
-############
 
-### Not done ###
+
 @login_required
 @staff_member_required
 def staff_activities(request):
