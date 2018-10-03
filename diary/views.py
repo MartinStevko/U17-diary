@@ -873,6 +873,88 @@ def activities(request):
     activities_ = Activity.objects.all()
     return render(request, template, {'activities':activities_})
 
+def challange(request):
+    template = 'diary/challange.html'
+
+    try:
+        profile = Account.objects.get(idUser=request.user)
+
+    except(Account.DoesNotExist):
+        request.session['message'] = ['warn','Profil pre tvoj účet neexistuje. Ak máš dojem, že by mal, kontaktuj admina.']
+        return redirect('diary:home')
+
+    except(Account.MultipleObjectsReturned):
+        message = 'Pre tvoj účet ({}) existuje viacero profilov. Kontaktuj admina stránky so žiadosťou o vyriešenie problému.'
+        DuplicateError.objects.create(idUser=request.user, error_message=message)
+        request.session['message'] = ['error', message]
+        return redirect('diary:home')
+
+    date_str = str(datetime.now().year)+'-'+str(datetime.now().month)+'-'+str(datetime.now().day)
+    try:
+        challange_ = DailyChallange.objects.get(date=date_str)
+    except(DailyChallange.DoesNotExist):
+        request.session['message'] = ['warn','Dnes nie je aktívna žiadna denná výzva.']
+        return redirect('diary:home')
+    except:
+        request.session['message'] = ['error','Neočakávaná chyba! Položky výzvy neboli vybrané.']
+        return redirect('diary:home')
+
+    items = []
+    temp_items = ChallangeItem.objects.filter(challange=challange_)
+    for item in temp_items:
+        try:
+            ItemResult.objects.get(account=profile, item=item)
+        except(ItemResult.DoesNotExist):
+            items.append([item, False])
+        else:
+            items.append([item, True])
+
+    if request.method == "POST":
+        checked_ = []
+        for item in temp_items:
+            try:
+                temp = request.POST["challange_item_"+str(item.id)]
+            except:
+                pass
+            else:
+                checked_.append(item)
+        
+        all_items = ChallangeItem.objects.filter(challange=challange_)
+
+        try:
+            ch_res = ChallangeResult.objects.get(account=profile, challange=challange_)
+        except(ChallangeResult.DoesNotExist):
+            if len(all_items) == len(checked_):
+                ChallangeResult.objects.create(account=profile, challange=challange_)
+
+                profile.points += challange_.points
+                profile.save()
+        else:
+            if len(all_items) != len(checked_):
+                ch_res.delete()
+                update_points(profile)
+
+        for item in all_items:
+            try:
+                temp_res = ItemResult.objects.get(account=profile, item=item)
+            except(ItemResult.DoesNotExist):
+                if item in checked_:
+                    ItemResult.objects.create(account=profile, item=item)
+            else:
+                if not item in checked_:
+                    temp_res.delete()
+
+        return redirect('diary:challange')
+
+    else:
+        ch_done = ChallangeResult.objects.filter(challange=challange_).order_by('-time')
+
+        return render(request, template, {
+            'challange':challange_,
+            'items':items,
+            'done':ch_done,
+        })
+
 
 @login_required
 @staff_member_required
@@ -1281,3 +1363,18 @@ def not_my_profile(request, username):
         'data':data,
         'profile_user':profile_user
     })
+
+@login_required
+@staff_member_required
+def all_challanges(request):
+    pass
+
+'''
+To does:
+
+ - nakodit prehlad vsetkych vyziev a hracok pre coachov
+ - spravit html na ten prehlad
+ - spravit css na dennu vyzvu
+ - pridat body z dennych vyziev do funkcii vypoctov bodov profilu a tyzdna
+ - pridat polozky do ako to funguje
+'''

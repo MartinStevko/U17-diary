@@ -1,0 +1,56 @@
+{% extends 'diary/base.html' %}
+
+{% load staticfiles %}
+
+{% block title %}
+  <title>Denná výzva</title>
+{% endblock %}
+
+{% block css %}
+  <link rel="stylesheet" href="{% static 'css/challange.css' %}">
+{% endblock %}
+
+{% block content %}
+  {% if challange %}
+    <h1>{{ challange.name }}</h1>
+    <p id="date">{{ challange.date }}</p>
+    <form id="challange" method="POST" autocomplete="off">
+      {% csrf_token %}
+      {% for item in items %}
+        {% if item.1 %}
+          <input type="checkbox" name="challange_item_{{ item.0.id }}" onchange="this.form.submit();" checked> {{ item.0.action }}<br>
+        {% else %}
+          <input type="checkbox" name="challange_item_{{ item.0.id }}" onchange="this.form.submit();"> {{ item.0.action }}<br>
+        {% endif %}
+      {% endfor %}
+    </form>
+    <table>
+      <tr>
+        <th>#</th>
+        <th>Meno</th>
+        <th>Čas dokončenia</th>
+      </tr>
+      {% for ch in done %}
+        <tr>
+          <td>{{ ch.account.idUser.username }}</td>
+          <td>{{ ch.time }}</td>
+        </tr>
+      {% endfor %}
+    </table>
+  {% else %}
+    <h1>Dnes nie je aktívna žiadna denná výzva</h1>
+  {% endif %}
+{% endblock %}
+
+{%  block late_js %}
+  <script>
+      var tables = document.getElementsByTagName('table');
+      var table = tables[tables.length -1];
+      var rows = table.rows;
+      for(var i = 1, td; i < rows.length; i++){
+          td = document.createElement('td');
+          td.appendChild(document.createTextNode(i);
+          rows[i].insertBefore(td, rows[i].firstChild);
+      }
+  </script>
+{% endblock %}
