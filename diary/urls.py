@@ -20,6 +20,7 @@ urlpatterns = [
     path('diary/action/<int:action_id>', views.view_action, name='view_action'),
     path('diary/action/add', views.add_action, name='add_action'),
     path('diary/activities', views.activities, name='activities'),
+    path('challange/today', views.challange, name='challange'),
     ################
 
     ### Staff things ###
@@ -30,6 +31,8 @@ urlpatterns = [
     path('profile/<str:username>', views.not_my_profile, name='not_my_profile'),
     path('console', views.console, name='console'),
     path('console/post', views.console_post, name='console_post'),
+    path('challange/management', views.manage_challange, name='manage_challange'),
+    path('challange/list', views.all_challanges, name='all_challanges'),
     ####################
 
     path('index', views.index, name='index'),

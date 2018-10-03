@@ -14,5 +14,10 @@ admin.site.register(Week)
 admin.site.register(Activity)
 admin.site.register(Message)
 
+admin.site.register(DailyChallange)
+admin.site.register(ChallangeItem)
+admin.site.register(ItemResult)
+admin.site.register(ChallangeResult)
+
 admin.site.register(EvaulationChanges)
 admin.site.register(DuplicateError)
