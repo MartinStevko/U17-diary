@@ -259,6 +259,10 @@ def update_points(profile):
     for act in actions:
         p += act.duration * act.idActivity.ppm
 
+    challanges = ChallangeResult.objects.filter(account=profile)
+    for ch in challanges:
+        p += ch.challange.points
+
     profile.points = p
     profile.save()
 
@@ -890,26 +894,28 @@ def challange(request):
         return redirect('diary:home')
 
     date_str = str(datetime.now().year)+'-'+str(datetime.now().month)+'-'+str(datetime.now().day)
-    try:
-        challange_ = DailyChallange.objects.get(date=date_str)
-    except(DailyChallange.DoesNotExist):
+    challanges_ = DailyChallange.objects.filter(date=date_str)
+
+    if len(challanges_) == 0:
         request.session['message'] = ['warn','Dnes nie je aktívna žiadna denná výzva.']
         return redirect('diary:home')
-    except:
-        request.session['message'] = ['error','Neočakávaná chyba! Položky výzvy neboli vybrané.']
-        return redirect('diary:home')
 
-    items = []
-    temp_items = ChallangeItem.objects.filter(challange=challange_)
-    for item in temp_items:
-        try:
-            ItemResult.objects.get(account=profile, item=item)
-        except(ItemResult.DoesNotExist):
-            items.append([item, False])
-        else:
-            items.append([item, True])
+    data_ = []
+    for challange_ in challanges_:
+        items = []
+        temp_items = ChallangeItem.objects.filter(challange=challange_)
+        for item in temp_items:
+            try:
+                ItemResult.objects.get(account=profile, item=item)
+            except(ItemResult.DoesNotExist):
+                items.append([item, False])
+            else:
+                items.append([item, True])
+        data_.append([challange_, items])
 
     if request.method == "POST":
+        '''
+        # For one challange
         checked_ = []
         for item in temp_items:
             try:
@@ -944,15 +950,70 @@ def challange(request):
                 if not item in checked_:
                     temp_res.delete()
 
-        return redirect('diary:challange')
+        # For more challanges
+        for challange_ in data_:
+            challange_items = 0
+            for item_ in challange_[1]:
+                temp_str = 'challange_' + str(challange_[0].id) + '_item_' + str(item_[0].id)
+
+                check_ = request.POST.get(temp_str, False)
+                if check_:
+                    challange_items += 1
+                    if not item_[1]:
+                        ItemResult.objects.create(account=profile, item=item_[0])
+
+                else:
+                    if item_[1]:
+                        ItemResult.objects.get(account=profile, item=item_[0]).delete()
+
+            if challange_items == len(challange_):
+                print('ano')
+            else:
+                print('nie')
+        '''
+
+        # For AJAX post
+        item_id = request.POST['id']
+        to_change = ChallangeItem.objects.get(pk=item_id)
+        try:
+            instance = ItemResult.objects.get(account=profile, item=to_change)
+        except(ItemResult.DoesNotExist):
+            ItemResult.objects.create(account=profile, item=to_change)
+        else:
+            instance.delete()
+
+        all_items = ChallangeItem.objects.filter(challange=to_change.challange)
+        done_ = True
+        for item_ in all_items:
+            try:
+                ItemResult.objects.get(account=profile, item=item_)
+            except(ItemResult.DoesNotExist):
+                done_ = False
+                break
+
+        if done_:
+            try:
+                ChallangeResult.objects.get(account=profile, challange=to_change.challange)
+            except(ChallangeResult.DoesNotExist):
+                ChallangeResult.objects.create(account=profile, challange=to_change.challange)
+
+                profile.points += challange_.points
+                profile.save()
+        
+        else:
+            try:
+                exist_result = ChallangeResult.objects.get(account=profile, challange=to_change.challange)
+            except(ChallangeResult.DoesNotExist):
+                pass
+            else:
+                exist_result.delete()
+                update_points(profile)
+
+        return HttpResponse("")
 
     else:
-        ch_done = ChallangeResult.objects.filter(challange=challange_).order_by('-time')
-
         return render(request, template, {
-            'challange':challange_,
-            'items':items,
-            'done':ch_done,
+            'data':data_,
         })
 
 
@@ -1373,8 +1434,6 @@ def all_challanges(request):
 To does:
 
  - nakodit prehlad vsetkych vyziev a hracok pre coachov
- - spravit html na ten prehlad
- - spravit css na dennu vyzvu
- - pridat body z dennych vyziev do funkcii vypoctov bodov profilu a tyzdna
- - pridat polozky do ako to funguje
+
+ - pridat body z dennych vyziev do funkcii vypoctov bodov okrem update points
 '''

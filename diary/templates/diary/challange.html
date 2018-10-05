@@ -11,46 +11,68 @@
 {% endblock %}
 
 {% block content %}
-  {% if challange %}
-    <h1>{{ challange.name }}</h1>
-    <p id="date">{{ challange.date }}</p>
-    <form id="challange" method="POST" autocomplete="off">
-      {% csrf_token %}
-      {% for item in items %}
-        {% if item.1 %}
-          <input type="checkbox" name="challange_item_{{ item.0.id }}" onchange="this.form.submit();" checked> {{ item.0.action }}<br>
-        {% else %}
-          <input type="checkbox" name="challange_item_{{ item.0.id }}" onchange="this.form.submit();"> {{ item.0.action }}<br>
-        {% endif %}
-      {% endfor %}
-    </form>
-    <table>
-      <tr>
-        <th>#</th>
-        <th>Meno</th>
-        <th>Čas dokončenia</th>
-      </tr>
-      {% for ch in done %}
-        <tr>
-          <td>{{ ch.account.idUser.username }}</td>
-          <td>{{ ch.time }}</td>
-        </tr>
-      {% endfor %}
-    </table>
+  {% if data %}
+    {% for challange in data %}
+      <h1>{{ challange.0.name }} - {{ challange.0.points }} bodov</h1>
+      <p class="date">{{ challange.0.date }}</p>
+      <form method="POST" autocomplete="off">
+        {% csrf_token %}
+        {% for item in challange.1 %}
+          <label class="container">
+            {{ item.0.action }}
+            {% if item.1 %}
+              <input type="checkbox" name="challange_{{ challange.0.id }}_item_{{ item.0.id }}" onchange="input_post('{{ item.0.id }}')" checked>
+            {% else %}
+              <input type="checkbox" name="challange_{{ challange.0.id }}_item_{{ item.0.id }}" onchange="input_post('{{ item.0.id }}')">
+            {% endif %}
+            <span class="checkmark"></span>
+          </label>
+        {% endfor %}
+      </form>
+    {% endfor %}
   {% else %}
     <h1>Dnes nie je aktívna žiadna denná výzva</h1>
   {% endif %}
 {% endblock %}
 
-{%  block late_js %}
+{% block late_js %}
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
   <script>
-      var tables = document.getElementsByTagName('table');
-      var table = tables[tables.length -1];
-      var rows = table.rows;
-      for(var i = 1, td; i < rows.length; i++){
-          td = document.createElement('td');
-          td.appendChild(document.createTextNode(i);
-          rows[i].insertBefore(td, rows[i].firstChild);
+    function getCookie(name) {
+      var cookieValue = null;
+      if (document.cookie && document.cookie !== '') {
+          var cookies = document.cookie.split(';');
+          for (var i = 0; i < cookies.length; i++) {
+              var cookie = jQuery.trim(cookies[i]);
+              // Does this cookie string begin with the name we want?
+              if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                  cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                  break;
+              }
+          }
       }
+      return cookieValue;
+    };
+
+    function csrfSafeMethod(method) {
+      // these HTTP methods do not require CSRF protection
+      return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+    }
+    $.ajaxSetup({
+      beforeSend: function(xhr, settings) {
+          if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+              xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+          }
+      }
+    });
+
+    function input_post(input_id) {
+      $.post("today",
+      {
+        csrf_token: getCookie('csrftoken'),
+        id: input_id,
+      },
+      function(data,status) {});
+    };
   </script>
 {% endblock %}
