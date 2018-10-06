@@ -980,209 +980,225 @@ def activities(request):
     return render(request, template, {'activities': activities_})
 
 
-@login_required
 def challange(request):
-    template = 'diary/challange.html'
-
-    try:
-        profile = Account.objects.get(idUser=request.user)
-
-    except(Account.DoesNotExist):
-        request.session['message'] = ['warn', 'Profil pre tvoj účet \
-        neexistuje. Ak máš dojem, že by mal, kontaktuj admina.']
-        return redirect('diary:home')
-
-    except(Account.MultipleObjectsReturned):
-        message = 'Pre tvoj účet ({}) existuje viacero profilov. \
-        Kontaktuj admina stránky so žiadosťou o vyriešenie problému.'
-        DuplicateError.objects.create(
-            idUser=request.user,
-            error_message=message
-        )
-        request.session['message'] = ['error', message]
-        return redirect('diary:home')
-
-    date_str = str(datetime.now().year) + '-' + \
-        str(datetime.now().month) + '-' + \
-        str(datetime.now().day)
-    challanges_ = DailyChallange.objects.filter(date=date_str)
-
-    if len(challanges_) == 0:
-        request.session['message'] = ['warn', 'Dnes nie je \
-        aktívna žiadna denná výzva.']
-        return redirect('diary:home')
-
-    data_ = []
-    for challange_ in challanges_:
-        items = []
-        temp_items = ChallangeItem.objects.filter(challange=challange_)
-        for item in temp_items:
-            try:
-                ItemResult.objects.get(account=profile, item=item)
-            except(ItemResult.DoesNotExist):
-                items.append([item, False])
-            else:
-                items.append([item, True])
-        data_.append([challange_, items])
-
-    if request.method == "POST":
-        '''
-        # For one challange
-        checked_ = []
-        for item in temp_items:
-            try:
-                temp = request.POST["challange_item_"+str(item.id)]
-            except:
-                pass
-            else:
-                checked_.append(item)
-
-        all_items = ChallangeItem.objects.filter(challange=challange_)
+    if request.user.is_authenticated:
+        template = 'diary/challange.html'
 
         try:
-            ch_res = ChallangeResult.objects.get(
-                account=profile,
-                challange=challange_
+            profile = Account.objects.get(idUser=request.user)
+
+        except(Account.DoesNotExist):
+            request.session['message'] = ['warn', 'Profil pre tvoj účet \
+            neexistuje. Ak máš dojem, že by mal, kontaktuj admina.']
+            return redirect('diary:home')
+
+        except(Account.MultipleObjectsReturned):
+            message = 'Pre tvoj účet ({}) existuje viacero profilov. \
+            Kontaktuj admina stránky so žiadosťou o vyriešenie problému.'
+            DuplicateError.objects.create(
+                idUser=request.user,
+                error_message=message
             )
-        except(ChallangeResult.DoesNotExist):
-            if len(all_items) == len(checked_):
-                ChallangeResult.objects.create(
+            request.session['message'] = ['error', message]
+            return redirect('diary:home')
+
+        date_str = str(datetime.now().year) + '-' + \
+            str(datetime.now().month) + '-' + \
+            str(datetime.now().day)
+        challanges_ = DailyChallange.objects.filter(date=date_str)
+
+        if len(challanges_) == 0:
+            request.session['message'] = ['warn', 'Dnes nie je \
+            aktívna žiadna denná výzva.']
+            return redirect('diary:home')
+
+        data_ = []
+        for challange_ in challanges_:
+            items = []
+            temp_items = ChallangeItem.objects.filter(challange=challange_)
+            for item in temp_items:
+                try:
+                    ItemResult.objects.get(account=profile, item=item)
+                except(ItemResult.DoesNotExist):
+                    items.append([item, False])
+                else:
+                    items.append([item, True])
+            data_.append([challange_, items])
+
+        if request.method == "POST":
+            '''
+            # For one challange
+            checked_ = []
+            for item in temp_items:
+                try:
+                    temp = request.POST["challange_item_"+str(item.id)]
+                except:
+                    pass
+                else:
+                    checked_.append(item)
+
+            all_items = ChallangeItem.objects.filter(challange=challange_)
+
+            try:
+                ch_res = ChallangeResult.objects.get(
                     account=profile,
                     challange=challange_
                 )
+            except(ChallangeResult.DoesNotExist):
+                if len(all_items) == len(checked_):
+                    ChallangeResult.objects.create(
+                        account=profile,
+                        challange=challange_
+                    )
 
-                profile.points += challange_.points
-                profile.save()
-        else:
-            if len(all_items) != len(checked_):
-                ch_res.delete()
-                update_points(profile)
-
-        for item in all_items:
-            try:
-                temp_res = ItemResult.objects.get(account=profile, item=item)
-            except(ItemResult.DoesNotExist):
-                if item in checked_:
-                    ItemResult.objects.create(account=profile, item=item)
+                    profile.points += challange_.points
+                    profile.save()
             else:
-                if not item in checked_:
-                    temp_res.delete()
+                if len(all_items) != len(checked_):
+                    ch_res.delete()
+                    update_points(profile)
 
-        # For more challanges
-        for challange_ in data_:
-            challange_items = 0
-            for item_ in challange_[1]:
-                temp_str = 'challange_' + str(challange_[0].id) + \
-                    '_item_' + str(item_[0].id)
+            for item in all_items:
+                try:
+                    temp_res = ItemResult.objects.get(
+                        account=profile,
+                        item=item
+                    )
+                except(ItemResult.DoesNotExist):
+                    if item in checked_:
+                        ItemResult.objects.create(account=profile, item=item)
+                else:
+                    if not item in checked_:
+                        temp_res.delete()
 
-                check_ = request.POST.get(temp_str, False)
-                if check_:
-                    challange_items += 1
-                    if not item_[1]:
-                        ItemResult.objects.create(
-                            account=profile,
-                            item=item_[0]
+            # For more challanges
+            for challange_ in data_:
+                challange_items = 0
+                for item_ in challange_[1]:
+                    temp_str = 'challange_' + str(challange_[0].id) + \
+                        '_item_' + str(item_[0].id)
+
+                    check_ = request.POST.get(temp_str, False)
+                    if check_:
+                        challange_items += 1
+                        if not item_[1]:
+                            ItemResult.objects.create(
+                                account=profile,
+                                item=item_[0]
+                            )
+
+                    else:
+                        if item_[1]:
+                            ItemResult.objects.get(
+                                account=profile,
+                                item=item_[0]
+                            ).delete()
+
+                if challange_items == len(challange_):
+                    print('ano')
+                else:
+                    print('nie')
+            '''
+
+            # For AJAX post
+            item_id = request.POST['id']
+            to_change = ChallangeItem.objects.get(pk=item_id)
+            try:
+                instance = ItemResult.objects.get(
+                    account=profile,
+                    item=to_change
+                )
+            except(ItemResult.DoesNotExist):
+                ItemResult.objects.create(account=profile, item=to_change)
+            else:
+                instance.delete()
+
+            all_items = ChallangeItem.objects.filter(
+                challange=to_change.challange
+            )
+            done_ = True
+            for item_ in all_items:
+                try:
+                    ItemResult.objects.get(account=profile, item=item_)
+                except(ItemResult.DoesNotExist):
+                    done_ = False
+                    break
+
+            if done_:
+                try:
+                    ChallangeResult.objects.get(
+                        account=profile,
+                        challange=to_change.challange
+                    )
+                except(ChallangeResult.DoesNotExist):
+                    current_challange = ChallangeResult.objects.create(
+                        account=profile,
+                        challange=to_change.challange
+                    )
+
+                    profile.points += to_change.challange.points
+                    profile.save()
+
+                    first_date = date(2018, 7, 16)
+                    delta = current_challange.time.date() - first_date
+                    week_number = delta.days // 7 + 1
+
+                    try:
+                        week = Week.objects.get(
+                            idAccount=profile,
+                            ordinal_number=week_number
+                        )
+                    except(Week.DoesNotExist):
+                        week = Week.objects.create(
+                            idAccount=profile,
+                            ordinal_number=week_number,
+                            points=to_change.challange.points
+                        )
+                        week.save()
+                    except(Week.MultipleObjectsReturned):
+                        message = "Add Action - v databáze týždňov (Week) \
+                        sa vyskytuje viacero týždňov pre účet {} s poradovým \
+                        číslom {}".format(
+                            profile.idUser.username,
+                            ordinal_number
+                        )
+                        DuplicateError.objects.create(
+                            idUser=request.user,
+                            error_message=message
                         )
 
-                else:
-                    if item_[1]:
-                        ItemResult.objects.get(
-                            account=profile,
-                            item=item_[0]
-                        ).delete()
+                        week = Week.objects.filter(
+                            idAccount=profile,
+                            ordinal_number=week_number
+                        )[0]
 
-            if challange_items == len(challange_):
-                print('ano')
-            else:
-                print('nie')
-        '''
-
-        # For AJAX post
-        item_id = request.POST['id']
-        to_change = ChallangeItem.objects.get(pk=item_id)
-        try:
-            instance = ItemResult.objects.get(account=profile, item=to_change)
-        except(ItemResult.DoesNotExist):
-            ItemResult.objects.create(account=profile, item=to_change)
-        else:
-            instance.delete()
-
-        all_items = ChallangeItem.objects.filter(challange=to_change.challange)
-        done_ = True
-        for item_ in all_items:
-            try:
-                ItemResult.objects.get(account=profile, item=item_)
-            except(ItemResult.DoesNotExist):
-                done_ = False
-                break
-
-        if done_:
-            try:
-                ChallangeResult.objects.get(
-                    account=profile,
-                    challange=to_change.challange
-                )
-            except(ChallangeResult.DoesNotExist):
-                current_challange = ChallangeResult.objects.create(
-                    account=profile,
-                    challange=to_change.challange
-                )
-
-                profile.points += to_change.challange.points
-                profile.save()
-
-                first_date = date(2018, 7, 16)
-                delta = current_challange.time.date() - first_date
-                week_number = delta.days // 7 + 1
-
-                try:
-                    week = Week.objects.get(
-                        idAccount=profile,
-                        ordinal_number=week_number
-                    )
-                except(Week.DoesNotExist):
-                    week = Week.objects.create(
-                        idAccount=profile,
-                        ordinal_number=week_number,
-                        points=to_change.challange.points
-                    )
+                    week.points += to_change.challange.points
                     week.save()
-                except(Week.MultipleObjectsReturned):
-                    message = "Add Action - v databáze týždňov (Week) \
-                    sa vyskytuje viacero týždňov pre účet {} s poradovým \
-                    číslom {}".format(profile.idUser.username, ordinal_number)
-                    DuplicateError.objects.create(
-                        idUser=request.user,
-                        error_message=message
+
+            else:
+                try:
+                    exist_result = ChallangeResult.objects.get(
+                        account=profile,
+                        challange=to_change.challange
                     )
+                except(ChallangeResult.DoesNotExist):
+                    pass
+                else:
+                    exist_result.delete()
+                    update_points(profile)
+                    week_repair(profile)
 
-                    week = Week.objects.filter(
-                        idAccount=profile,
-                        ordinal_number=week_number
-                    )[0]
-
-                week.points += to_change.challange.points
-                week.save()
+            return HttpResponse("")
 
         else:
-            try:
-                exist_result = ChallangeResult.objects.get(
-                    account=profile,
-                    challange=to_change.challange
-                )
-            except(ChallangeResult.DoesNotExist):
-                pass
-            else:
-                exist_result.delete()
-                update_points(profile)
-                week_repair(profile)
-
-        return HttpResponse("")
-
+            return render(request, template, {
+                'data': data_,
+            })
     else:
-        return render(request, template, {
-            'data': data_,
-        })
+        request.session['message'] = 'Stránka, ktorú chceš navštíviť \
+        vyžaduje prihlásenie. Najprv sa prihlás.'
+        request.session['back_redirection'] = 'challange'
+        return redirect('diary:log_in')
 
 
 @login_required
