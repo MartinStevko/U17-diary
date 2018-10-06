@@ -1471,10 +1471,24 @@ def not_my_profile(request, username):
 @login_required
 @staff_member_required
 def all_challanges(request):
-    pass
+    template = 'diary/all_challanges.html'
 
-'''
-To does:
+    data = []
+    challanges = DailyChallange.objects.all().order_by('-date', '-pk')
+    profiles = Account.objects.filter(approved=True)
+    for challange_ in challanges:
+        data_profiles = []
+        items = ChallangeItem.objects.filter(challange=challange_)
+        for profile_ in profiles:
+            data_items = []
+            for item_ in items:
+                try:
+                    ItemResult.objects.get(account=profile_, item=item_)
+                except(ItemResult.DoesNotExist):
+                    data_items.append([item_, False])
+                else:
+                    data_items.append([item_, True])
+            data_profiles.append([profile_, data_items])
+        data.append([challange_, data_profiles])
 
- - nakodit prehlad vsetkych vyziev a hracok pre coachov
-'''
+    return render(request, template, {'data':data})
