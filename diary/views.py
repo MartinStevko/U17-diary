@@ -1476,8 +1476,11 @@ def all_challanges(request):
     data = []
     challanges = DailyChallange.objects.all().order_by('-date', '-pk')
     profiles = Account.objects.filter(approved=True)
+    height_ = len(profiles) - len(profiles)//2
     for challange_ in challanges:
-        data_profiles = []
+        x = 0
+        data_profiles1 = []
+        data_profiles2 = []
         items = ChallangeItem.objects.filter(challange=challange_)
         for profile_ in profiles:
             data_items = []
@@ -1488,7 +1491,14 @@ def all_challanges(request):
                     data_items.append([item_, False])
                 else:
                     data_items.append([item_, True])
-            data_profiles.append([profile_, data_items])
-        data.append([challange_, data_profiles])
+
+            if x < height_:
+                data_profiles1.append([profile_, data_items])
+            else:
+                data_profiles2.append([profile_, data_items])
+
+            x += 1
+
+        data.append([challange_, data_profiles1, data_profiles2])
 
     return render(request, template, {'data':data})

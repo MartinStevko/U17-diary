@@ -1,3 +1,7 @@
+* {
+    box-sizing: border-box;
+}
+
 .date {
     text-align: center;
     margin-top: 0px;
@@ -74,4 +78,47 @@ form {
     -webkit-transform: rotate(45deg);
     -ms-transform: rotate(45deg);
     transform: rotate(45deg);
+}
+
+/* Create two equal columns that floats next to each other */
+.column {
+    float: left;
+    width: 50%;
+    padding: 0 20px;
+}
+
+/* Clear floats after the columns */
+.row:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+@media only screen and (max-width: 650px) {
+    /* For mobile phones: */
+    .column {
+        width: 100%;
+    }
+}
+
+i.item-check {
+    font-size: 20px;
+    padding: auto;
+}
+
+div.items {
+    padding-left: 10px;
+}
+
+p.item-action {
+    display: inline;
+    padding: 10px;
+}
+
+.fa-check {
+    color: green;
+}
+
+.fa-times {
+    color: red;
 }

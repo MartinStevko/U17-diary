@@ -14,22 +14,37 @@
     {% for challange in data %}
         <h1>{{ challange.0.name }} - {{ challange.0.points }} bodov</h1>
         <p class="date">{{ challange.0.date }}</p>
-        <form method="POST" autocomplete="off">
-            {% for profile in challange.1 %}
-                <h2>{{ profile.0.idUser.username }}</h2>
-                {% csrf_token %}
-                {% for item in profile.1 %}
-                    <label class="container">
-                        {{ item.0.action }}
-                        {% if item.1 %}
-                            <input type="checkbox" name="challange_{{ challange.0.id }}_item_{{ item.0.id }}" onchange="input_post('{{ item.0.id }}')" disabled checked>
-                        {% else %}
-                            <input type="checkbox" name="challange_{{ challange.0.id }}_item_{{ item.0.id }}" onchange="input_post('{{ item.0.id }}')" disabled>
-                        {% endif %}
-                        <span class="checkmark"></span>
-                    </label>
+        <div class="row">
+            <div class="column">
+                {% for profile in challange.1 %}
+                    <h2>{{ profile.0.idUser.username }}</h2>
+                    {% for item in profile.1 %}
+                        <div class="items">
+                            {% if item.1 %}
+                                <i class="fa fa-check item-check"></i>
+                            {% else %}
+                                <i class="fa fa-times item-check"></i>
+                            {% endif %}
+                            <p class="item-action">{{ item.0.action }}</p>
+                        </div>
+                    {% endfor %}
                 {% endfor %}
-            {% endfor %}
-        </form>
+            </div>
+            <div class="column">
+                {% for profile in challange.2 %}
+                    <h2>{{ profile.0.idUser.username }}</h2>
+                    {% for item in profile.1 %}
+                        <div class="items">
+                            {% if item.1 %}
+                                <i class="fa fa-check item-check"></i>
+                            {% else %}
+                                <i class="fa fa-times item-check"></i>
+                            {% endif %}
+                            <p class="item-action">{{ item.0.action }}</p>
+                        </div>
+                    {% endfor %}
+                {% endfor %}
+            </div>
+        </div>
     {% endfor %}
 {% endblock %}
