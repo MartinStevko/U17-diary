@@ -10,6 +10,14 @@
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 {% endblock %}
 
+{% block css %}
+  <style>
+    a.w3-bar-item:hover {
+      text-decoration: none;
+    }
+  </style>
+{% endblock %}
+
 {% block content %}
   <h1>Kondičný denník</h1>
   {% if success %}

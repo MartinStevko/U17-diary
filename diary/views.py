@@ -1477,6 +1477,4 @@ def all_challanges(request):
 To does:
 
  - nakodit prehlad vsetkych vyziev a hracok pre coachov
-
- - pridat body z dennych vyziev do tyzdnov
 '''
