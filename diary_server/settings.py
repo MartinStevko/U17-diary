@@ -106,15 +106,13 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
 '''
-### Deployment ### + set DEBUG = False
+# Deployment + set DEBUG = False
 STATIC_ROOT = '/var/www/repreU17.pythonanywhere.com/static/'
 # for collectstatic command - '/home/repreU17/U17-diary/static/'
-##################
 '''
 
-### Production ###
+# Production
 STATIC_ROOT = os.path.dirname(os.path.abspath(__file__))
-##################
 
 STATIC_URL = '/static/'
 

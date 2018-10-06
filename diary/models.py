@@ -36,7 +36,10 @@ class Week(models.Model):
     points = models.PositiveIntegerField(default=0)
 
     def __str__(self):
-        return "{}. týždeň - {}".format(self.ordinal_number, self.idAccount.idUser.username)
+        return "{}. týždeň - {}".format(
+            self.ordinal_number,
+            self.idAccount.idUser.username,
+        )
 
 
 class Activity(models.Model):
@@ -66,7 +69,11 @@ class Action(models.Model):
         if self.duration > 60:
             hours = self.duration // 60
             minutes = self.duration - 60*hours
-            return "{} - {} hodín {} minút".format(self.idActivity.name, hours, minutes)
+            return "{} - {} hodín {} minút".format(
+                self.idActivity.name,
+                hours,
+                minutes,
+            )
         else:
             return "{} - {} minút".format(self.idActivity.name, self.duration)
 
@@ -157,7 +164,10 @@ class ChallangeResult(models.Model):
         verbose_name_plural = "Challange results"
 
     def __str__(self):
-        return "{} - {}".format(self.account.idUser.username, self.challange.name)
+        return "{} - {}".format(
+            self.account.idUser.username,
+            self.challange.name,
+        )
 
 
 class DuplicateError(models.Model):
