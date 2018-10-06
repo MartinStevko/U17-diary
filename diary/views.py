@@ -980,6 +980,7 @@ def activities(request):
     return render(request, template, {'activities': activities_})
 
 
+@login_required
 def challange(request):
     template = 'diary/challange.html'
 
