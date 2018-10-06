@@ -786,6 +786,7 @@ def week_repair(profile):
 
     weeks = Week.objects.filter(idAccount=profile)
     actions = Action.objects.filter(idAccount=profile)
+    challanges = ChallangeResult.objects.filter(account=profile)
     for week in weeks:
         obj = []
         ord_ = week.ordinal_number - 1
@@ -804,6 +805,11 @@ def week_repair(profile):
 
         for act in obj:
             total_sum += act.duration * act.idActivity.ppm
+
+        for ch in challanges:
+            naive = ch.time.replace(tzinfo=None)
+            if (naive > start_ and naive < end_):
+                total_sum += ch.challange.points
 
         week.points = total_sum
         week.save()
@@ -1002,10 +1008,32 @@ def challange(request):
             try:
                 ChallangeResult.objects.get(account=profile, challange=to_change.challange)
             except(ChallangeResult.DoesNotExist):
-                ChallangeResult.objects.create(account=profile, challange=to_change.challange)
+                current_challange = ChallangeResult.objects.create(account=profile, challange=to_change.challange)
 
-                profile.points += challange_.points
+                profile.points += to_change.challange.points
                 profile.save()
+
+                first_date = date(2018, 7, 16)
+                delta = current_challange.time.date() - first_date
+                week_number = delta.days // 7 + 1
+
+                try:
+                    week = Week.objects.get(idAccount=profile, ordinal_number=week_number)
+                except(Week.DoesNotExist):
+                    week = Week.objects.create(
+                        idAccount = profile,
+                        ordinal_number = week_number,
+                        points = to_change.challange.points
+                    )
+                    week.save()
+                except(Week.MultipleObjectsReturned):
+                    message = "Add Action - v databáze týždňov (Week) sa vyskytuje viacero týždňov pre účet {} s poradovým číslom {}".format(profile.idUser.username, ordinal_number)
+                    DuplicateError.objects.create(idUser=request.user, error_message=message)
+
+                    week = Week.objects.filter(idAccount=profile, ordinal_number=week_number)[0]
+
+                week.points += to_change.challange.points
+                week.save()
         
         else:
             try:
@@ -1015,6 +1043,7 @@ def challange(request):
             else:
                 exist_result.delete()
                 update_points(profile)
+                week_repair(profile)
 
         return HttpResponse("")
 
@@ -1417,6 +1446,13 @@ def not_my_profile(request, username):
             r = act.date.date() - date_now
             if r.days == 0:
                 p += act.duration * act.idActivity.ppm
+
+        challanges = ChallangeResult.objects.filter(account=profile)
+        for ch in challanges:
+            r = ch.time.date() - date_now
+            if r.days == 0:
+                p += ch.challange.points
+
         data.append([i, p])
 
     if profile.approved == True:
@@ -1442,8 +1478,5 @@ To does:
 
  - nakodit prehlad vsetkych vyziev a hracok pre coachov
 
- - pridat body z dennych vyziev do funkcii vypoctov bodov okrem update points
-
- - update points
- - profile
+ - pridat body z dennych vyziev do tyzdnov
 '''
