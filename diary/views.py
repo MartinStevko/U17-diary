@@ -298,6 +298,13 @@ def profile(request):
                 r = act.date.date() - date_now
                 if r.days == 0:
                     p += act.duration * act.idActivity.ppm
+
+            challanges = ChallangeResult.objects.filter(account=profile)
+            for ch in challanges:
+                r = ch.time.date() - date_now
+                if r.days == 0:
+                    p += ch.challange.points
+
             data.append([i, p])
 
         if profile.approved == True:
@@ -1436,4 +1443,7 @@ To does:
  - nakodit prehlad vsetkych vyziev a hracok pre coachov
 
  - pridat body z dennych vyziev do funkcii vypoctov bodov okrem update points
+
+ - update points
+ - profile
 '''
