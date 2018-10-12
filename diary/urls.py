@@ -12,8 +12,13 @@ urlpatterns = [
 
     # My diary
     path('home', views.home, name='home'),
-    path('profile/me', views.profile, name='profile'),
     path('profile/me/change', views.change_profile, name='change_profile'),
+    path(
+        'profile/me/password/change',
+        views.change_password,
+        name='change_password'
+    ),
+    path('profile/me', views.profile, name='profile'),
     path('graph', views.graph, name='graph'),
     path('diary/my', views.my_diary, name='my_diary'),
     path(
@@ -39,8 +44,8 @@ urlpatterns = [
         views.not_my_profile,
         name='not_my_profile'
     ),
-    path('console', views.console, name='console'),
     path('console/post', views.console_post, name='console_post'),
+    path('console', views.console, name='console'),
     path('challange/list', views.all_challanges, name='all_challanges'),
 
     path('index', views.index, name='index'),

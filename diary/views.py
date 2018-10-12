@@ -510,6 +510,59 @@ def change_profile(request):
         return redirect('diary:log_in')
 
 
+def change_password(request):
+    if request.user.is_authenticated:
+        template = 'diary/change_password.html'
+
+        if request.method == 'POST':
+            old_password = request.POST['old']
+            new_password = request.POST['password']
+            confirm_password = request.POST['confirm']
+
+            user = authenticate(
+                username=request.user.username,
+                password=old_password
+            )
+
+            if not user:
+                request.session['message'] = 'Staré heslo je nesprávne!'
+                return redirect('diary:change_password')
+
+            if new_password != confirm_password:
+                request.session['message'] = 'Zadané heslá sa nezhodujú!'
+                return redirect('diary:change_password')
+
+            try:
+                user.set_password(new_password)
+                user.save()
+            except:
+                request.session['message'] = 'Zmena hesla nebola úspešná, \
+                skús to znova.'
+                return redirect('diary:change_password')
+            else:
+                login(request, user)
+                request.session['message'] = ['success', 'Heslo bolo úspešne \
+                zmenené.']
+                return redirect('diary:home')
+
+        else:
+            try:
+                message = request.session['message']
+            except(KeyError):
+                message = None
+
+            if message:
+                return render(request, template, {'error': message})
+            else:
+                return render(request, template, {})
+
+    else:
+        request.session['message'] = 'Stránka, ktorú chceš navštíviť \
+        vyžaduje prihlásenie. Najprv sa prihlás.'
+        request.session['back_redirection'] = 'change_profile'
+        return redirect('diary:log_in')
+
+
 def my_diary(request):
     if request.user.is_authenticated:
         template = 'diary/my_diary.html'
