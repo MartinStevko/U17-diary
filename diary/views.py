@@ -1491,6 +1491,7 @@ def console(request):
 
 def generate_results(number, all):
     if all:
+        time_old = EvaulationChanges.objects.all().order_by('pk').last()
         time_ = EvaulationChanges.objects.create()
     profiles = Account.objects.filter(approved=True)
     for profile in profiles:
@@ -1510,8 +1511,6 @@ def generate_results(number, all):
         points_old = OldPoints.objects.filter(
             account=profile
         ).order_by('pk').last()
-
-        time_old = EvaulationChanges.objects.all().order_by('pk').last()
 
         try:
             if all:
