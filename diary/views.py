@@ -1569,7 +1569,7 @@ def console_post(request):
 
             elif command == 'repair profiles':
                 try:
-                    profiles = Account.objects.all()
+                    profiles = Account.objects.filter(approved=True)
                     for profile in profiles:
                         update_points(profile)
                 except:
@@ -1582,7 +1582,7 @@ def console_post(request):
                 delta = datetime.now().date() - first_date
                 week_number = delta.days // 7 + 1
                 try:
-                    profiles = Account.objects.all()
+                    profiles = Account.objects.filter(approved=True)
                     for profile in profiles:
                         weeks = Week.objects.filter(
                             idAccount=profile
