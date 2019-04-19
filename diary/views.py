@@ -1511,6 +1511,8 @@ def generate_results(number, all):
             account=profile
         ).order_by('pk').last()
 
+        time_old = EvaulationChanges.objects.all().order_by('pk').last()
+
         try:
             if all:
                 if profile.points > 0:
@@ -1522,7 +1524,7 @@ def generate_results(number, all):
 
                 actions = Action.objects.filter(
                     idAccount=profile,
-                    date__gte=time_.time
+                    date__gte=time_old.time
                 )
 
                 points_last = 0
