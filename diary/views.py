@@ -1522,7 +1522,7 @@ def generate_results(number, all):
 
                 actions = Action.objects.filter(
                     idAccount=profile,
-                    date__gte=time_
+                    date__gte=time_.time
                 )
 
                 points_last = 0
