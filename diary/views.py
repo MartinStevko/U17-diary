@@ -1520,7 +1520,14 @@ def generate_results(number, all):
                         value=profile.points
                     )
 
-                points_last = profile.points - points_old.value
+                actions = Action.objects.filter(
+                    idAccount=profile,
+                    date__gte=time_
+                )
+
+                points_last = 0
+                for act in actions:
+                    points_last += int(act.idActivity.ppm)*int(act.duration)
             else:
                 points_last = profile.points
 
