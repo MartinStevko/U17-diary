@@ -990,7 +990,7 @@ def graph(request):
             ).order_by('idAccount_id')
             weeks = []
             for week in weeks_temp:
-                if week.idAccount.points != 0:
+                if week.idAccount.points != 0 and week.idAccount.approved:
                     weeks.append(week)
             week_data = []
             week_str = str(i) + '.'
